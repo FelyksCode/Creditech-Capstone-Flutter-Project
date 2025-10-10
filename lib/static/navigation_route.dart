@@ -1,8 +1,11 @@
 enum NavigationRoute {
-  mainRoute("/"),
-  settingRoute("/setting"),
-  loginRoute("/login");
+  login('/login'),
+  mainRoute('/'),
+  home('/home'),
+  analytics('/analytics'),
+  history('/history'),
+  profile('/profile');
 
-  const NavigationRoute(this.name);
-  final String name;
+  const NavigationRoute(this.path);
+  final String path;
 }
