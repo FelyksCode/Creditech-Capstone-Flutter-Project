@@ -2,6 +2,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:creditech_capstone_project/ui/widgets/dust_background.dart';
+import 'package:creditech_capstone_project/ui/pages/auth/login_page_new.dart';
+import 'package:creditech_capstone_project/ui/pages/auth/register_page.dart';
 
 class LoginLandingPage extends StatelessWidget {
   const LoginLandingPage({super.key});
@@ -68,9 +70,11 @@ class LoginLandingPage extends StatelessWidget {
                         child: _Button.dark(
                           label: 'Login',
                           onPressed: () {
-                            Navigator.pushReplacementNamed(
+                            Navigator.push(
                               context,
-                              '/',
+                              MaterialPageRoute(
+                                builder: (context) => const LoginPageNew(),
+                              ),
                             );
                           },
                         ),
@@ -80,9 +84,11 @@ class LoginLandingPage extends StatelessWidget {
                         child: _Button.light(
                           label: 'Create Account',
                           onPressed: () {
-                            Navigator.pushReplacementNamed(
+                            Navigator.push(
                               context,
-                              '/',
+                              MaterialPageRoute(
+                                builder: (context) => const RegisterPage(),
+                              ),
                             );
                           },
                         ),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'edit_profile_page.dart';
 import 'notifications_page.dart';
 import 'package:creditech_capstone_project/ui/widgets/dust_background.dart';
+import 'package:creditech_capstone_project/controller/auth_controller.dart';
+import 'package:creditech_capstone_project/static/navigation_route.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -19,6 +22,49 @@ class _ProfilePageState extends State<ProfilePage> {
   bool generalNotificationOn = true;
   String language = 'English';
   String themeLabel = 'Light mode';
+
+  void _handleLogout() async {
+    // Show confirmation dialog
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: const Text(
+          'Logout',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: const Text(
+          'Are you sure you want to logout?',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF4169E1),
+            ),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldLogout == true) {
+      final authController = context.read<AuthController>();
+      await authController.signOut();
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context, 
+          NavigationRoute.login.path, 
+          (route) => false,
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -200,10 +246,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   const SizedBox(height: 14),
 
-                  _TileGroup(children: const [
+                  _TileGroup(children: [
                     _TileRow(
                       icon: Icons.logout,
                       title: 'Logout',
+                      onTap: _handleLogout,
                     ),
                   ]),
                 ],

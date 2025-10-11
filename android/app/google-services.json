@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "148084085495",
+    "project_id": "creditech-capstone-dicoding",
+    "storage_bucket": "creditech-capstone-dicoding.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:148084085495:android:2877af80e77c93eb81b9f2",
+        "android_client_info": {
+          "package_name": "com.example.creditech_capstone_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "148084085495-jea6148uib4f9q7eab6pns1h52ne0sfg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZbF3EdixD6DA2UNzSRREGx5rLim-0XTQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "148084085495-jea6148uib4f9q7eab6pns1h52ne0sfg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "148084085495-ckdcr4d6hs53sogtv5m86vviqnvhmr7n.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.creditechCapstoneProject"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,16 +1,28 @@
+import 'package:creditech_capstone_project/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:creditech_capstone_project/controller/index_nav_provider.dart';
+import 'package:creditech_capstone_project/controller/auth_controller.dart';
 import 'package:creditech_capstone_project/ui/pages/auth/login_page.dart';
-import 'package:creditech_capstone_project/ui/pages/main_page/main_page.dart';
+import 'package:creditech_capstone_project/ui/widgets/auth_wrapper.dart';
 import 'package:creditech_capstone_project/static/navigation_route.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: ".env");
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => IndexNavProvider()),
+        ChangeNotifierProvider(create: (_) => AuthController()),
       ],
       child: const MainApp(),
     ),
@@ -33,7 +45,7 @@ class MainApp extends StatelessWidget {
       initialRoute: NavigationRoute.login.path,
       routes: {
         NavigationRoute.login.path: (_) => const LoginLandingPage(),
-        NavigationRoute.mainRoute.path: (_) => const MainPage(),
+        NavigationRoute.mainRoute.path: (_) => const AuthWrapper(),
       },
     );
   }
