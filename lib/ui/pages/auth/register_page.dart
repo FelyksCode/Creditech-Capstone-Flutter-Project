@@ -54,10 +54,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: 8),
                   const Text(
                     'Sign up to get started with Creditech',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 16),
                   ),
                   const SizedBox(height: 40),
 
@@ -77,7 +74,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                 if (value == null || value.isEmpty) {
                                   return 'Email address is required';
                                 }
-                                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                                if (!RegExp(
+                                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                ).hasMatch(value)) {
                                   return 'Please enter a valid email format (example@email.com)';
                                 }
                                 return null;
@@ -92,7 +91,9 @@ class _RegisterPageState extends State<RegisterPage> {
                               obscureText: _obscurePassword,
                               suffixIcon: IconButton(
                                 icon: Icon(
-                                  _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                                  _obscurePassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
                                   color: Colors.white70,
                                 ),
                                 onPressed: () {
@@ -120,12 +121,15 @@ class _RegisterPageState extends State<RegisterPage> {
                               obscureText: _obscureConfirmPassword,
                               suffixIcon: IconButton(
                                 icon: Icon(
-                                  _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                                  _obscureConfirmPassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
                                   color: Colors.white70,
                                 ),
                                 onPressed: () {
                                   setState(() {
-                                    _obscureConfirmPassword = !_obscureConfirmPassword;
+                                    _obscureConfirmPassword =
+                                        !_obscureConfirmPassword;
                                   });
                                 },
                               ),
@@ -150,7 +154,10 @@ class _RegisterPageState extends State<RegisterPage> {
                                 decoration: BoxDecoration(
                                   color: Colors.red.withOpacity(0.15),
                                   borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: Colors.red.withOpacity(0.4), width: 1),
+                                  border: Border.all(
+                                    color: Colors.red.withOpacity(0.4),
+                                    width: 1,
+                                  ),
                                 ),
                                 child: Row(
                                   children: [
@@ -187,7 +194,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                     borderRadius: BorderRadius.circular(25),
                                   ),
                                 ),
-                                onPressed: authController.isLoading ? null : _signUpWithEmail,
+                                onPressed: authController.isLoading
+                                    ? null
+                                    : _signUpWithEmail,
                                 child: authController.isLoading
                                     ? const SizedBox(
                                         height: 20,
@@ -199,7 +208,10 @@ class _RegisterPageState extends State<RegisterPage> {
                                       )
                                     : const Text(
                                         'Sign Up',
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                               ),
                             ),
@@ -209,7 +221,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             Row(
                               children: [
                                 Expanded(
-                                  child: Divider(color: Colors.white.withOpacity(0.3)),
+                                  child: Divider(
+                                    color: Colors.white.withOpacity(0.3),
+                                  ),
                                 ),
                                 const Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 16),
@@ -219,7 +233,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                 ),
                                 Expanded(
-                                  child: Divider(color: Colors.white.withOpacity(0.3)),
+                                  child: Divider(
+                                    color: Colors.white.withOpacity(0.3),
+                                  ),
                                 ),
                               ],
                             ),
@@ -232,24 +248,29 @@ class _RegisterPageState extends State<RegisterPage> {
                               child: OutlinedButton.icon(
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: Colors.white,
-                                  side: BorderSide(color: Colors.white.withOpacity(0.3)),
+                                  side: BorderSide(
+                                    color: Colors.white.withOpacity(0.3),
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(25),
                                   ),
                                 ),
-                                onPressed: authController.isLoading ? null : _signUpWithGoogle,
+                                onPressed: authController.isLoading
+                                    ? null
+                                    : _signUpWithGoogle,
                                 icon: Image.asset(
                                   'assets/images/google_icon.png',
                                   height: 24,
                                   width: 24,
-                                  errorBuilder: (context, error, stackTrace) => const Icon(
-                                    Icons.g_mobiledata,
-                                    size: 24,
-                                  ),
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(Icons.g_mobiledata, size: 24),
                                 ),
                                 label: const Text(
                                   'Sign up with Google',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ),
@@ -334,10 +355,10 @@ class _RegisterPageState extends State<RegisterPage> {
     if (_formKey.currentState!.validate()) {
       final authController = context.read<AuthController>();
       authController.clearError();
-      
+
       // Initialize dependencies before registration
       authController.initializeDependencies(context);
-      
+
       final success = await authController.registerWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text,
@@ -397,10 +418,10 @@ class _RegisterPageState extends State<RegisterPage> {
   void _signUpWithGoogle() async {
     final authController = context.read<AuthController>();
     authController.clearError();
-    
+
     // Initialize dependencies before Google sign-in
     authController.initializeDependencies(context);
-    
+
     final success = await authController.signInWithGoogle();
 
     if (success) {

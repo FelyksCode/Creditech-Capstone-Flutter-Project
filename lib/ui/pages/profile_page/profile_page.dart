@@ -16,10 +16,7 @@ class ProfilePage extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E1E1E),
-        title: const Text(
-          'Logout',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Logout', style: TextStyle(color: Colors.white)),
         content: const Text(
           'Are you sure you want to logout?',
           style: TextStyle(color: Colors.white70),
@@ -44,8 +41,8 @@ class ProfilePage extends StatelessWidget {
       final authController = context.read<AuthController>();
       await authController.signOut();
       Navigator.pushNamedAndRemoveUntil(
-        context, 
-        NavigationRoute.login.path, 
+        context,
+        NavigationRoute.login.path,
         (route) => false,
       );
     }
@@ -95,7 +92,9 @@ class ProfilePage extends StatelessWidget {
                                     shape: BoxShape.circle,
                                     color: Color(0xFF202020),
                                     image: DecorationImage(
-                                      image: AssetImage('assets/images/img.png'),
+                                      image: AssetImage(
+                                        'assets/images/img.png',
+                                      ),
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -114,10 +113,14 @@ class ProfilePage extends StatelessWidget {
                                           color: Colors.black.withOpacity(0.35),
                                           blurRadius: 8,
                                           offset: const Offset(0, 3),
-                                        )
+                                        ),
                                       ],
                                     ),
-                                    child: const Icon(Icons.edit, size: 16, color: Colors.black87),
+                                    child: const Icon(
+                                      Icons.edit,
+                                      size: 16,
+                                      color: Colors.black87,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -134,7 +137,10 @@ class ProfilePage extends StatelessWidget {
                             const SizedBox(height: 6),
                             Text(
                               '${profileProvider.email} | ${profileProvider.phone}',
-                              style: const TextStyle(color: Colors.white70, fontSize: 13),
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 13,
+                              ),
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -142,106 +148,120 @@ class ProfilePage extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
 
-                      _TileGroup(children: [
-                        _TileRow(
-                          icon: Icons.edit_outlined,
-                          title: 'Edit profile information',
-                          trailingText: '',
-                          onTap: () async {
-                            final result = await Navigator.push<EditProfileResult>(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => EditProfilePage(
-                                  initialFullName: profileProvider.fullName,
-                                  initialNickName: profileProvider.nickName,
-                                  initialEmail: profileProvider.email,
-                                  initialPhone: profileProvider.phone,
+                      _TileGroup(
+                        children: [
+                          _TileRow(
+                            icon: Icons.edit_outlined,
+                            title: 'Edit profile information',
+                            trailingText: '',
+                            onTap: () async {
+                              final result =
+                                  await Navigator.push<EditProfileResult>(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => EditProfilePage(
+                                        initialFullName:
+                                            profileProvider.fullName,
+                                        initialNickName:
+                                            profileProvider.nickName,
+                                        initialEmail: profileProvider.email,
+                                        initialPhone: profileProvider.phone,
+                                      ),
+                                    ),
+                                  );
+                              if (result != null) {
+                                profileProvider.updateProfile(
+                                  fullName: result.fullName,
+                                  nickName: result.nickName,
+                                  email: result.email,
+                                  phone: result.phone,
+                                );
+                              }
+                            },
+                          ),
+                          _DividerRow(),
+                          _TileRow(
+                            icon: Icons.notifications_none_rounded,
+                            title: 'Notifications',
+                            trailingText: profileProvider.generalNotificationOn
+                                ? 'ON'
+                                : 'OFF',
+                            trailingTextColor:
+                                profileProvider.generalNotificationOn
+                                ? const Color(0xFF7FB1FF)
+                                : Colors.white54,
+                            onTap: () async {
+                              final result = await Navigator.push<bool>(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => NotificationsPage(
+                                    initialGeneralOn:
+                                        profileProvider.generalNotificationOn,
+                                  ),
                                 ),
-                              ),
-                            );
-                            if (result != null) {
-                              profileProvider.updateProfile(
-                                fullName: result.fullName,
-                                nickName: result.nickName,
-                                email: result.email,
-                                phone: result.phone,
                               );
-                            }
-                          },
-                        ),
-                        _DividerRow(),
-                        _TileRow(
-                          icon: Icons.notifications_none_rounded,
-                          title: 'Notifications',
-                          trailingText: profileProvider.generalNotificationOn ? 'ON' : 'OFF',
-                          trailingTextColor: profileProvider.generalNotificationOn 
-                              ? const Color(0xFF7FB1FF) 
-                              : Colors.white54,
-                          onTap: () async {
-                            final result = await Navigator.push<bool>(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => NotificationsPage(
-                                  initialGeneralOn: profileProvider.generalNotificationOn,
-                                ),
-                              ),
-                            );
-                            if (result != null) {
-                              profileProvider.updateGeneralNotification(result);
-                            }
-                          },
-                        ),
-                        _DividerRow(),
-                        _TileRow(
-                          icon: Icons.language_outlined,
-                          title: 'Language',
-                          trailingText: profileProvider.language,
-                        ),
-                      ]),
+                              if (result != null) {
+                                profileProvider.updateGeneralNotification(
+                                  result,
+                                );
+                              }
+                            },
+                          ),
+                          _DividerRow(),
+                          _TileRow(
+                            icon: Icons.language_outlined,
+                            title: 'Language',
+                            trailingText: profileProvider.language,
+                          ),
+                        ],
+                      ),
 
                       const SizedBox(height: 14),
 
-                      _TileGroup(children: [
-                        _TileRow(
-                          icon: Icons.lock_outline,
-                          title: 'Security',
-                        ),
-                        _DividerRow(),
-                        _TileRow(
-                          icon: Icons.color_lens_outlined,
-                          title: 'Theme',
-                          trailingText: profileProvider.themeLabel,
-                        ),
-                      ]),
+                      _TileGroup(
+                        children: [
+                          _TileRow(icon: Icons.lock_outline, title: 'Security'),
+                          _DividerRow(),
+                          _TileRow(
+                            icon: Icons.color_lens_outlined,
+                            title: 'Theme',
+                            trailingText: profileProvider.themeLabel,
+                          ),
+                        ],
+                      ),
 
                       const SizedBox(height: 14),
 
-                      _TileGroup(children: [
-                        _TileRow(
-                          icon: Icons.support_agent_outlined,
-                          title: 'Help & Support',
-                        ),
-                        _DividerRow(),
-                        _TileRow(
-                          icon: Icons.mail_outline,
-                          title: 'Contact us',
-                        ),
-                        _DividerRow(),
-                        _TileRow(
-                          icon: Icons.privacy_tip_outlined,
-                          title: 'Privacy policy',
-                        ),
-                      ]),
+                      _TileGroup(
+                        children: [
+                          _TileRow(
+                            icon: Icons.support_agent_outlined,
+                            title: 'Help & Support',
+                          ),
+                          _DividerRow(),
+                          _TileRow(
+                            icon: Icons.mail_outline,
+                            title: 'Contact us',
+                          ),
+                          _DividerRow(),
+                          _TileRow(
+                            icon: Icons.privacy_tip_outlined,
+                            title: 'Privacy policy',
+                          ),
+                        ],
+                      ),
 
                       const SizedBox(height: 14),
 
-                      _TileGroup(children: [
-                        _TileRow(
-                          icon: Icons.logout,
-                          title: 'Logout',
-                          onTap: () => _handleLogout(context),
-                        ),
-                      ]),
+                      _TileGroup(
+                        children: [
+                          _TileRow(
+                            icon: Icons.logout,
+                            title: 'Logout',
+                            onTap: () => _handleLogout(context),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -308,7 +328,11 @@ class _TileRow extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             if (trailingText != null)

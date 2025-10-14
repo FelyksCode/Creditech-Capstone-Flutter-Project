@@ -48,10 +48,7 @@ class _LoginPageNewState extends State<LoginPageNew> {
                   const SizedBox(height: 8),
                   const Text(
                     'Sign in to continue to Creditech',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 16),
                   ),
                   const SizedBox(height: 40),
 
@@ -71,7 +68,9 @@ class _LoginPageNewState extends State<LoginPageNew> {
                                 if (value == null || value.isEmpty) {
                                   return 'Email address is required';
                                 }
-                                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                                if (!RegExp(
+                                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                ).hasMatch(value)) {
                                   return 'Please enter a valid email format (example@email.com)';
                                 }
                                 return null;
@@ -86,7 +85,9 @@ class _LoginPageNewState extends State<LoginPageNew> {
                               obscureText: _obscurePassword,
                               suffixIcon: IconButton(
                                 icon: Icon(
-                                  _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                                  _obscurePassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
                                   color: Colors.white70,
                                 ),
                                 onPressed: () {
@@ -116,7 +117,10 @@ class _LoginPageNewState extends State<LoginPageNew> {
                                 decoration: BoxDecoration(
                                   color: Colors.red.withOpacity(0.15),
                                   borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: Colors.red.withOpacity(0.4), width: 1),
+                                  border: Border.all(
+                                    color: Colors.red.withOpacity(0.4),
+                                    width: 1,
+                                  ),
                                 ),
                                 child: Row(
                                   children: [
@@ -153,7 +157,9 @@ class _LoginPageNewState extends State<LoginPageNew> {
                                     borderRadius: BorderRadius.circular(25),
                                   ),
                                 ),
-                                onPressed: authController.isLoading ? null : _signInWithEmail,
+                                onPressed: authController.isLoading
+                                    ? null
+                                    : _signInWithEmail,
                                 child: authController.isLoading
                                     ? const SizedBox(
                                         height: 20,
@@ -165,7 +171,10 @@ class _LoginPageNewState extends State<LoginPageNew> {
                                       )
                                     : const Text(
                                         'Sign In',
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                               ),
                             ),
@@ -175,7 +184,9 @@ class _LoginPageNewState extends State<LoginPageNew> {
                             Row(
                               children: [
                                 Expanded(
-                                  child: Divider(color: Colors.white.withOpacity(0.3)),
+                                  child: Divider(
+                                    color: Colors.white.withOpacity(0.3),
+                                  ),
                                 ),
                                 const Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 16),
@@ -185,7 +196,9 @@ class _LoginPageNewState extends State<LoginPageNew> {
                                   ),
                                 ),
                                 Expanded(
-                                  child: Divider(color: Colors.white.withOpacity(0.3)),
+                                  child: Divider(
+                                    color: Colors.white.withOpacity(0.3),
+                                  ),
                                 ),
                               ],
                             ),
@@ -198,24 +211,29 @@ class _LoginPageNewState extends State<LoginPageNew> {
                               child: OutlinedButton.icon(
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: Colors.white,
-                                  side: BorderSide(color: Colors.white.withOpacity(0.3)),
+                                  side: BorderSide(
+                                    color: Colors.white.withOpacity(0.3),
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(25),
                                   ),
                                 ),
-                                onPressed: authController.isLoading ? null : _signInWithGoogle,
+                                onPressed: authController.isLoading
+                                    ? null
+                                    : _signInWithGoogle,
                                 icon: Image.asset(
                                   'assets/images/google_icon.png',
                                   height: 24,
                                   width: 24,
-                                  errorBuilder: (context, error, stackTrace) => const Icon(
-                                    Icons.g_mobiledata,
-                                    size: 24,
-                                  ),
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(Icons.g_mobiledata, size: 24),
                                 ),
                                 label: const Text(
                                   'Sign in with Google',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ),
@@ -250,7 +268,9 @@ class _LoginPageNewState extends State<LoginPageNew> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const RegisterPage()),
+                            MaterialPageRoute(
+                              builder: (context) => const RegisterPage(),
+                            ),
                           );
                         },
                         child: const Text(
@@ -316,10 +336,10 @@ class _LoginPageNewState extends State<LoginPageNew> {
     if (_formKey.currentState!.validate()) {
       final authController = context.read<AuthController>();
       authController.clearError();
-      
+
       // Initialize dependencies before sign-in
       authController.initializeDependencies(context);
-      
+
       final success = await authController.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text,
@@ -379,10 +399,10 @@ class _LoginPageNewState extends State<LoginPageNew> {
   void _signInWithGoogle() async {
     final authController = context.read<AuthController>();
     authController.clearError();
-    
+
     // Initialize dependencies before Google sign-in
     authController.initializeDependencies(context);
-    
+
     final success = await authController.signInWithGoogle();
 
     if (success) {
@@ -437,7 +457,7 @@ class _LoginPageNewState extends State<LoginPageNew> {
 
   void _showForgotPasswordDialog() {
     final emailController = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -482,8 +502,10 @@ class _LoginPageNewState extends State<LoginPageNew> {
             onPressed: () async {
               if (emailController.text.isNotEmpty) {
                 final authController = context.read<AuthController>();
-                final success = await authController.resetPassword(emailController.text.trim());
-                
+                final success = await authController.resetPassword(
+                  emailController.text.trim(),
+                );
+
                 if (mounted) {
                   Navigator.pop(context);
                   if (success) {
@@ -514,11 +536,15 @@ class _LoginPageNewState extends State<LoginPageNew> {
                       SnackBar(
                         content: Row(
                           children: [
-                            const Icon(Icons.error_outline, color: Colors.white),
+                            const Icon(
+                              Icons.error_outline,
+                              color: Colors.white,
+                            ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
-                                authController.errorMessage ?? 'Failed to send reset email. Please try again.',
+                                authController.errorMessage ??
+                                    'Failed to send reset email. Please try again.',
                                 style: const TextStyle(color: Colors.white),
                               ),
                             ),

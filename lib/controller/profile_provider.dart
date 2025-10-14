@@ -11,7 +11,6 @@ class ProfileProvider extends ChangeNotifier {
   String _email = 'youremail@domain.com';
   String _phone = '+01 234 567 89';
   String? _country;
-  String? _address;
   String? _photoURL;
 
   // Settings
@@ -36,7 +35,6 @@ class ProfileProvider extends ChangeNotifier {
   String get email => _email;
   String get phone => _phone;
   String? get country => _country;
-  String? get address => _address;
   String? get photoURL => _photoURL;
   bool get generalNotificationOn => _generalNotificationOn;
   String get language => _language;
@@ -93,7 +91,6 @@ class ProfileProvider extends ChangeNotifier {
     _email = data['email'] ?? '';
     _phone = data['phone'] ?? '';
     _country = data['country'] ?? 'Indonesia';
-    _address = data['address'];
     _photoURL = data['photoURL'];
   }
 
@@ -120,14 +117,12 @@ class ProfileProvider extends ChangeNotifier {
     required String email,
     required String phone,
     String? country,
-    String? address,
   }) async {
     _fullName = fullName;
     _nickName = nickName;
     _email = email;
     _phone = phone;
     if (country != null) _country = country;
-    if (address != null) _address = address;
 
     // Save to Firestore
     if (_firestoreService != null) {
@@ -138,7 +133,6 @@ class ProfileProvider extends ChangeNotifier {
           email: email,
           phone: phone,
           country: _country,
-          address: _address,
         );
       } catch (e) {
         // Handle error silently for now, could add error state management
@@ -170,11 +164,6 @@ class ProfileProvider extends ChangeNotifier {
 
   void updateCountry(String? country) {
     _country = country;
-    notifyListeners();
-  }
-
-  void updateAddress(String? address) {
-    _address = address;
     notifyListeners();
   }
 

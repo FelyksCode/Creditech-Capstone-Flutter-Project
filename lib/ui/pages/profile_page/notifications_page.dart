@@ -17,49 +17,85 @@ class NotificationsPage extends StatelessWidget {
             backgroundColor: const Color(0xFF141414),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-              onPressed: () => Navigator.pop(context, profileProvider.generalNotificationOn),
+              onPressed: () =>
+                  Navigator.pop(context, profileProvider.generalNotificationOn),
             ),
-            title: const Text('Notifications',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+            title: const Text(
+              'Notifications',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
             centerTitle: true,
           ),
           body: ListView(
             padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
             children: [
               _SectionHeader('Common'),
-              _SwitchTile('General Notification', profileProvider.generalNotificationOn, 
-                  (v) => profileProvider.updateGeneralNotification(v)),
+              _SwitchTile(
+                'General Notification',
+                profileProvider.generalNotificationOn,
+                (v) => profileProvider.updateGeneralNotification(v),
+              ),
               _DividerLine(),
-              _SwitchTile('Sound', profileProvider.soundOn, 
-                  (v) => profileProvider.updateSoundNotification(v)),
+              _SwitchTile(
+                'Sound',
+                profileProvider.soundOn,
+                (v) => profileProvider.updateSoundNotification(v),
+              ),
               _DividerLine(),
-              _SwitchTile('Vibrate', profileProvider.vibrateOn, 
-                  (v) => profileProvider.updateVibrateNotification(v)),
+              _SwitchTile(
+                'Vibrate',
+                profileProvider.vibrateOn,
+                (v) => profileProvider.updateVibrateNotification(v),
+              ),
 
               const SizedBox(height: 18),
               _SectionHeader('System & services update'),
-              _SwitchTile('App updates', profileProvider.appUpdates, 
-                  (v) => profileProvider.updateAppUpdates(v)),
+              _SwitchTile(
+                'App updates',
+                profileProvider.appUpdates,
+                (v) => profileProvider.updateAppUpdates(v),
+              ),
               _DividerLine(),
-              _SwitchTile('Bill Reminder', profileProvider.billReminder, 
-                  (v) => profileProvider.updateBillReminder(v)),
+              _SwitchTile(
+                'Bill Reminder',
+                profileProvider.billReminder,
+                (v) => profileProvider.updateBillReminder(v),
+              ),
               _DividerLine(),
-              _SwitchTile('Promotion', profileProvider.promotion, 
-                  (v) => profileProvider.updatePromotion(v)),
+              _SwitchTile(
+                'Promotion',
+                profileProvider.promotion,
+                (v) => profileProvider.updatePromotion(v),
+              ),
               _DividerLine(),
-              _SwitchTile('Discount Available', profileProvider.discountAvailable, 
-                  (v) => profileProvider.updateDiscountAvailable(v)),
+              _SwitchTile(
+                'Discount Available',
+                profileProvider.discountAvailable,
+                (v) => profileProvider.updateDiscountAvailable(v),
+              ),
               _DividerLine(),
-              _SwitchTile('Payment Request', profileProvider.paymentRequest, 
-                  (v) => profileProvider.updatePaymentRequest(v)),
+              _SwitchTile(
+                'Payment Request',
+                profileProvider.paymentRequest,
+                (v) => profileProvider.updatePaymentRequest(v),
+              ),
 
               const SizedBox(height: 18),
               _SectionHeader('Others'),
-              _SwitchTile('New Service Available', profileProvider.newService, 
-                  (v) => profileProvider.updateNewService(v)),
+              _SwitchTile(
+                'New Service Available',
+                profileProvider.newService,
+                (v) => profileProvider.updateNewService(v),
+              ),
               _DividerLine(),
-              _SwitchTile('New Tips Available', profileProvider.newTips, 
-                  (v) => profileProvider.updateNewTips(v)),
+              _SwitchTile(
+                'New Tips Available',
+                profileProvider.newTips,
+                (v) => profileProvider.updateNewTips(v),
+              ),
             ],
           ),
         );
@@ -101,8 +137,14 @@ class _SwitchTile extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Text(title,
-                style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
           Switch(
             value: value,

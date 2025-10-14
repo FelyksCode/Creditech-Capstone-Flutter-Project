@@ -15,7 +15,7 @@ class AuthWrapper extends StatelessWidget {
         if (!authController.isAuthenticated) {
           return const LoginLandingPage();
         }
-        
+
         // Show main page if authenticated
         return const MainPage();
       },

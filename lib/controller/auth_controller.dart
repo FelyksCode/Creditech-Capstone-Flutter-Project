@@ -8,7 +8,7 @@ import 'package:creditech_capstone_project/controller/profile_provider.dart';
 class AuthController extends ChangeNotifier {
   final AuthService _authService = AuthService();
   ProfileProvider? _profileProvider;
-  
+
   bool _isLoading = false;
   String? _errorMessage;
   User? _user;
@@ -25,7 +25,7 @@ class AuthController extends ChangeNotifier {
       _user = user;
       notifyListeners();
     });
-    
+
     // Initialize current user
     _user = _authService.currentUser;
   }
@@ -37,9 +37,15 @@ class AuthController extends ChangeNotifier {
 
   // Initialize dependencies from Provider context
   void initializeDependencies(BuildContext context) {
-    final firestoreService = Provider.of<FirestoreService>(context, listen: false);
-    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
-    
+    final firestoreService = Provider.of<FirestoreService>(
+      context,
+      listen: false,
+    );
+    final profileProvider = Provider.of<ProfileProvider>(
+      context,
+      listen: false,
+    );
+
     // Set up dependencies
     profileProvider.setFirestoreService(firestoreService);
     setProfileProvider(profileProvider);
@@ -71,18 +77,18 @@ class AuthController extends ChangeNotifier {
     try {
       _setLoading(true);
       _setError(null);
-      
+
       final credential = await _authService.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      
+
       if (credential != null && credential.user != null) {
         // For login, we don't need to save/overwrite profile data
         // The profile data should already exist from registration
         return true;
       }
-      
+
       return false;
     } catch (e) {
       _setError(e.toString());
@@ -105,7 +111,7 @@ class AuthController extends ChangeNotifier {
         email: email,
         password: password,
       );
-      
+
       if (credential != null && credential.user != null) {
         // Save email/password user data to Firestore if profile provider is available
         if (_profileProvider != null) {
@@ -113,7 +119,7 @@ class AuthController extends ChangeNotifier {
         }
         return true;
       }
-      
+
       return false;
     } catch (e) {
       _setError(e.toString());
@@ -128,9 +134,9 @@ class AuthController extends ChangeNotifier {
     try {
       _setLoading(true);
       _setError(null);
-      
+
       final credential = await _authService.signInWithGoogle();
-      
+
       if (credential != null && credential.user != null) {
         // For Google sign-in, only save profile data if it's a new user
         if (_profileProvider != null) {
@@ -138,7 +144,7 @@ class AuthController extends ChangeNotifier {
         }
         return true;
       }
-      
+
       return false;
     } catch (e) {
       _setError(e.toString());
@@ -165,7 +171,7 @@ class AuthController extends ChangeNotifier {
     try {
       _setLoading(true);
       _setError(null);
-      
+
       await _authService.resetPassword(email);
       return true;
     } catch (e) {

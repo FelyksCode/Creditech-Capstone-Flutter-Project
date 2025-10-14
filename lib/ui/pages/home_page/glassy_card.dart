@@ -22,7 +22,10 @@ class GlassyCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         gradient: LinearGradient(
-          colors: [Colors.white.withOpacity(0.14), Colors.white.withOpacity(0.05)],
+          colors: [
+            Colors.white.withOpacity(0.14),
+            Colors.white.withOpacity(0.05),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -50,7 +53,11 @@ class GlassyCard extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              Icon(Icons.contactless_rounded, color: Colors.white.withOpacity(0.85), size: 30),
+              Icon(
+                Icons.contactless_rounded,
+                color: Colors.white.withOpacity(0.85),
+                size: 30,
+              ),
             ],
           ),
           const SizedBox(height: 28),
@@ -80,9 +87,23 @@ class GlassyCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(k, style: const TextStyle(color: Colors.white70, fontSize: 10, letterSpacing: 0.6)),
+        Text(
+          k,
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 10,
+            letterSpacing: 0.6,
+          ),
+        ),
         const SizedBox(height: 2),
-        Text(v, style: const TextStyle(color: Colors.white, fontSize: 15, fontFeatures: [FontFeature.tabularFigures()])),
+        Text(
+          v,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 15,
+            fontFeatures: [FontFeature.tabularFigures()],
+          ),
+        ),
       ],
     );
   }

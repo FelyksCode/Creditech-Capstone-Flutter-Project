@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class TransactionData {
   final String title;
   final String subtitle;
@@ -18,7 +17,6 @@ class TransactionData {
     required this.icon,
   });
 }
-
 
 class TransactionItem extends StatelessWidget {
   const TransactionItem({super.key, required this.data});
@@ -48,11 +46,7 @@ class TransactionItem extends StatelessWidget {
             color: data.badgeColor,
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            data.icon,
-            color: const Color(0xFF212121),
-            size: 22,
-          ),
+          child: Icon(data.icon, color: const Color(0xFF212121), size: 22),
         ),
         const SizedBox(width: 14),
 

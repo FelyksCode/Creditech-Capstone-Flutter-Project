@@ -77,22 +77,31 @@ class AnalyticsPage extends StatelessWidget {
                                 color: Colors.white.withOpacity(0.12),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.cloud_upload_outlined, color: Colors.white70),
+                              child: const Icon(
+                                Icons.cloud_upload_outlined,
+                                color: Colors.white70,
+                              ),
                             ),
                             const SizedBox(width: 10),
                             const Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Upload files',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w700)),
+                                  Text(
+                                    'Upload files',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
                                   SizedBox(height: 2),
                                   Text(
                                     'Select and upload the files oof your choice',
-                                    style: TextStyle(color: Colors.white70, fontSize: 12),
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -101,42 +110,65 @@ class AnalyticsPage extends StatelessWidget {
                               onTap: () {},
                               child: const Padding(
                                 padding: EdgeInsets.only(top: 4.0, left: 8),
-                                child: Icon(Icons.close_rounded, color: Colors.white70, size: 20),
+                                child: Icon(
+                                  Icons.close_rounded,
+                                  color: Colors.white70,
+                                  size: 20,
+                                ),
                               ),
                             ),
                           ],
                         ),
 
                         const SizedBox(height: 12),
-                        Container(height: 1, color: Colors.white.withOpacity(0.15)),
+                        Container(
+                          height: 1,
+                          color: Colors.white.withOpacity(0.15),
+                        ),
                         const SizedBox(height: 14),
 
                         _DashedDropZone(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.cloud_upload_outlined, size: 28, color: Colors.white70),
+                              const Icon(
+                                Icons.cloud_upload_outlined,
+                                size: 28,
+                                color: Colors.white70,
+                              ),
                               const SizedBox(height: 10),
                               const Text(
                                 'Choose a file or drag & drop it here',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                               const SizedBox(height: 4),
                               const Text(
                                 'JPEG, PNG, PDG, and MP4 formats, up to 50MB',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.white70, fontSize: 12),
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 12,
+                                ),
                               ),
                               const SizedBox(height: 14),
                               OutlinedButton(
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: Colors.white,
-                                  side: BorderSide(color: Colors.white.withOpacity(0.8)),
-                                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                                  side: BorderSide(
+                                    color: Colors.white.withOpacity(0.8),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 18,
+                                    vertical: 10,
+                                  ),
                                   shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10)),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
                                 ),
                                 onPressed: () {},
                                 child: const Text('Browse File'),
@@ -147,10 +179,12 @@ class AnalyticsPage extends StatelessWidget {
 
                         const SizedBox(height: 14),
 
-                        ...items.map((it) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: UploadFileItem(data: it),
-                        )),
+                        ...items.map(
+                          (it) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: UploadFileItem(data: it),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -164,13 +198,21 @@ class AnalyticsPage extends StatelessWidget {
                         foregroundColor: const Color(0xFF1B1B1B),
                         elevation: 0,
                         shadowColor: Colors.transparent,
-                        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 28,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
                       ),
                       onPressed: () {},
                       child: const Text(
                         'Get Smart Insights',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
@@ -255,8 +297,8 @@ class _DashedRRectPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _DashedRRectPainter old) =>
       color != old.color ||
-          radius != old.radius ||
-          strokeWidth != old.strokeWidth ||
-          dash != old.dash ||
-          gap != old.gap;
+      radius != old.radius ||
+      strokeWidth != old.strokeWidth ||
+      dash != old.dash ||
+      gap != old.gap;
 }

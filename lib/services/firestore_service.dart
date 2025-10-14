@@ -18,7 +18,6 @@ class FirestoreService {
     required String email,
     required String phone,
     String? country,
-    String? address,
   }) async {
     if (currentUserId == null) return;
 
@@ -30,7 +29,6 @@ class FirestoreService {
         'email': email,
         'phone': phone,
         'country': country,
-        'address': address,
         'updatedAt': FieldValue.serverTimestamp(),
         'createdAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
@@ -58,7 +56,7 @@ class FirestoreService {
   Future<void> saveGoogleAccountData(User user) async {
     // Use user.uid directly instead of currentUserId to avoid timing issues
     final userId = user.uid;
-    
+
     if (userId.isEmpty) {
       throw Exception('User UID is empty');
     }
@@ -87,25 +85,27 @@ class FirestoreService {
       if (!existingDoc.exists) {
         profileData['createdAt'] = FieldValue.serverTimestamp();
         profileData['country'] = "Indonesia";
-        profileData['address'] = null;
-        
+
         // For new users, save all profile data
-        await _userProfiles.doc(userId).set(profileData, SetOptions(merge: true));
+        await _userProfiles
+            .doc(userId)
+            .set(profileData, SetOptions(merge: true));
       } else {
         // For existing users, only update specific fields to avoid overwriting custom profile data
         Map<String, dynamic> updateData = {
           'photoURL': user.photoURL,
           'updatedAt': FieldValue.serverTimestamp(),
         };
-        
+
         // Only update email if it's not already set or if it's different
         final existingData = existingDoc.data() as Map<String, dynamic>?;
         if (existingData != null) {
-          if (existingData['email'] == null || existingData['email'].toString().isEmpty) {
+          if (existingData['email'] == null ||
+              existingData['email'].toString().isEmpty) {
             updateData['email'] = user.email ?? '';
           }
         }
-        
+
         await _userProfiles.doc(userId).update(updateData);
       }
     } catch (e) {
@@ -117,7 +117,7 @@ class FirestoreService {
   Future<void> saveEmailPasswordUserData(User user) async {
     // Use user.uid directly instead of currentUserId to avoid timing issues
     final userId = user.uid;
-    
+
     if (userId.isEmpty) {
       throw Exception('User UID is empty');
     }
@@ -145,16 +145,17 @@ class FirestoreService {
       if (!existingDoc.exists) {
         profileData['createdAt'] = FieldValue.serverTimestamp();
         profileData['country'] = null;
-        profileData['address'] = null;
-        
+
         // For new users, save all profile data
-        await _userProfiles.doc(userId).set(profileData, SetOptions(merge: true));
+        await _userProfiles
+            .doc(userId)
+            .set(profileData, SetOptions(merge: true));
       } else {
         // For existing users, only update the timestamp to avoid overwriting custom profile data
         Map<String, dynamic> updateData = {
           'updatedAt': FieldValue.serverTimestamp(),
         };
-        
+
         await _userProfiles.doc(userId).update(updateData);
       }
     } catch (e) {

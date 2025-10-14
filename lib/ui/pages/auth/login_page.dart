@@ -1,4 +1,3 @@
-
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:creditech_capstone_project/ui/widgets/dust_background.dart';
@@ -27,8 +26,14 @@ class LoginLandingPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 8),
-                  const Text('Creditech',
-                      style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Creditech',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
 
                   const SizedBox(height: 20),
                   Align(
@@ -58,9 +63,13 @@ class LoginLandingPage extends StatelessWidget {
 
                   const Text(
                     'No jargon. No guesswork. Just easy,\n'
-                        'reliable tools to grow your money -\n'
-                        'one step at a time.',
-                    style: TextStyle(color: Colors.white70, fontSize: 14, height: 1.5),
+                    'reliable tools to grow your money -\n'
+                    'one step at a time.',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                      height: 1.5,
+                    ),
                   ),
                   const SizedBox(height: 28),
 
@@ -144,7 +153,9 @@ class _Button extends StatelessWidget {
           foregroundColor: foreground,
           elevation: 0,
           shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22),
+          ),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         onPressed: onPressed,

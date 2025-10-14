@@ -37,14 +37,18 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _name =
-      TextEditingController(text: widget.initialFullName);
-  late final TextEditingController _nick =
-      TextEditingController(text: widget.initialNickName);
-  late final TextEditingController _email =
-      TextEditingController(text: widget.initialEmail);
-  late final TextEditingController _phone =
-      TextEditingController(text: widget.initialPhone);
+  late final TextEditingController _name = TextEditingController(
+    text: widget.initialFullName,
+  );
+  late final TextEditingController _nick = TextEditingController(
+    text: widget.initialNickName,
+  );
+  late final TextEditingController _email = TextEditingController(
+    text: widget.initialEmail,
+  );
+  late final TextEditingController _phone = TextEditingController(
+    text: widget.initialPhone,
+  );
 
   @override
   void dispose() {
@@ -66,8 +70,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Edit profile',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+        title: const Text(
+          'Edit profile',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+        ),
         centerTitle: true,
       ),
       body: Stack(
@@ -86,7 +92,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               child: Column(
                 children: [
                   _Input(
-                    label: 'Full name', 
+                    label: 'Full name',
                     controller: _name,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -102,11 +108,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     label: 'Email',
                     controller: _email,
                     keyboard: TextInputType.emailAddress,
+                    enabled: false,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Email is required';
                       }
-                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                      if (!RegExp(
+                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                      ).hasMatch(value)) {
                         return 'Please enter a valid email format';
                       }
                       return null;
@@ -114,11 +123,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   const SizedBox(height: 12),
                   _PhoneInput(label: 'Phone number', controller: _phone),
-                const SizedBox(height: 12),
+                  const SizedBox(height: 12),
 
-                const _Dropdownish(label: 'Country', valueText: 'Indonesia'),
-                const SizedBox(height: 12),
-                const _Input(label: 'Address', hint: '45 New Avenue, New York'),
+                  const _Dropdownish(label: 'Country', valueText: 'Indonesia'),
 
                   const SizedBox(height: 28),
                   SizedBox(
@@ -129,13 +136,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         backgroundColor: const Color(0xFF7FA9FF),
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       onPressed: () {
                         // Validate form
                         if (_formKey.currentState!.validate()) {
                           // Update profile using Provider
-                          final profileProvider = context.read<ProfileProvider>();
+                          final profileProvider = context
+                              .read<ProfileProvider>();
                           profileProvider.updateProfile(
                             fullName: _name.text.trim(),
                             nickName: _nick.text.trim(),
@@ -167,8 +176,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           );
                         }
                       },
-                      child: const Text('SUBMIT',
-                          style: TextStyle(fontWeight: FontWeight.w700)),
+                      child: const Text(
+                        'SUBMIT',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
                     ),
                   ),
                 ],
@@ -181,7 +192,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 }
 
-
 class _Input extends StatelessWidget {
   const _Input({
     required this.label,
@@ -189,6 +199,7 @@ class _Input extends StatelessWidget {
     this.controller,
     this.keyboard,
     this.validator,
+    this.enabled = true,
   });
 
   final String label;
@@ -196,6 +207,7 @@ class _Input extends StatelessWidget {
   final TextEditingController? controller;
   final TextInputType? keyboard;
   final String? Function(String?)? validator;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -207,8 +219,9 @@ class _Input extends StatelessWidget {
         TextFormField(
           controller: controller,
           keyboardType: keyboard,
-          style: const TextStyle(color: Colors.white),
-          decoration: _inputDecoration(hint: hint ?? ''),
+          enabled: enabled,
+          style: TextStyle(color: enabled ? Colors.white : Colors.white54),
+          decoration: _inputDecoration(hint: hint ?? '', enabled: enabled),
           validator: validator,
         ),
       ],
@@ -274,7 +287,10 @@ class _Dropdownish extends StatelessWidget {
             children: [
               Text(valueText, style: const TextStyle(color: Colors.white)),
               const Spacer(),
-              const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white70),
+              const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: Colors.white70,
+              ),
             ],
           ),
         ),
@@ -289,9 +305,14 @@ class _Label extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(text,
-        style: const TextStyle(
-            color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600));
+    return Text(
+      text,
+      style: const TextStyle(
+        color: Colors.white70,
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+      ),
+    );
   }
 }
 
@@ -301,21 +322,26 @@ final _filledBoxDecoration = BoxDecoration(
   border: Border.all(color: const Color(0xFF2D3550)),
 );
 
-InputDecoration _inputDecoration({String hint = ''}) {
+InputDecoration _inputDecoration({String hint = '', bool enabled = true}) {
   return InputDecoration(
     hintText: hint,
     hintStyle: const TextStyle(color: Colors.white54),
     filled: true,
-    fillColor: const Color(0xFF1C2230),
+    fillColor: enabled ? const Color(0xFF1C2230) : const Color(0xFF0F1419),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
-      borderSide: const BorderSide(color: Color(0xFF2D3550)),
+      borderSide: BorderSide(
+        color: enabled ? const Color(0xFF2D3550) : const Color(0xFF1A1F2A),
+      ),
+    ),
+    disabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: Color(0xFF1A1F2A)),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
       borderSide: const BorderSide(color: Color(0xFF4960A8)),
     ),
-    contentPadding:
-    const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
   );
 }

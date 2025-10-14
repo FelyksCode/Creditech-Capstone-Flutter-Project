@@ -65,17 +65,26 @@ class UploadFileItem extends StatelessWidget {
                         children: [
                           Text(
                             data.sizeText,
-                            style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 12,
+                            ),
                           ),
                           if (isUploading) ...[
                             const SizedBox(width: 6),
                             const SizedBox(
-                              width: 12, height: 12,
+                              width: 12,
+                              height: 12,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             ),
                             const SizedBox(width: 4),
-                            Text('Uploading...',
-                                style: TextStyle(color: Colors.grey.shade700, fontSize: 12)),
+                            Text(
+                              'Uploading...',
+                              style: TextStyle(
+                                color: Colors.grey.shade700,
+                                fontSize: 12,
+                              ),
+                            ),
                           ],
                           if (isCompleted) ...[
                             const SizedBox(width: 8),
@@ -122,7 +131,6 @@ class UploadFileItem extends StatelessWidget {
   }
 }
 
-
 class _FileBadge extends StatelessWidget {
   const _FileBadge();
 
@@ -138,7 +146,10 @@ class _FileBadge extends StatelessWidget {
       child: Stack(
         children: [
           const Center(
-            child: Icon(Icons.insert_drive_file_outlined, color: Color(0xFF8D95A6)),
+            child: Icon(
+              Icons.insert_drive_file_outlined,
+              color: Color(0xFF8D95A6),
+            ),
           ),
           Positioned(
             left: 4,
@@ -189,6 +200,10 @@ class _Dot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle));
+    return Container(
+      width: 8,
+      height: 8,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    );
   }
 }

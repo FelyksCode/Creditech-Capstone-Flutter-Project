@@ -17,15 +17,13 @@ void main() async {
 
   await dotenv.load(fileName: ".env");
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
     MultiProvider(
       providers: [
         // Core services
         Provider(create: (_) => FirestoreService()),
-        
+
         // State providers
         ChangeNotifierProvider(create: (_) => IndexNavProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),

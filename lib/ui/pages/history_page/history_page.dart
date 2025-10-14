@@ -83,10 +83,7 @@ class HistoryPage extends StatelessWidget {
                       gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [
-                          Color(0xFF242732),
-                          Color(0xFF2B2E3B),
-                        ],
+                        colors: [Color(0xFF242732), Color(0xFF2B2E3B)],
                       ),
                       boxShadow: [
                         BoxShadow(
@@ -112,7 +109,10 @@ class HistoryPage extends StatelessWidget {
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 8,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.black.withOpacity(0.25),
                                 borderRadius: BorderRadius.circular(18),
@@ -120,11 +120,19 @@ class HistoryPage extends StatelessWidget {
                               child: const Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text('Filter',
-                                      style: TextStyle(color: Colors.white, fontSize: 13)),
+                                  Text(
+                                    'Filter',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 13,
+                                    ),
+                                  ),
                                   SizedBox(width: 6),
-                                  Icon(Icons.keyboard_arrow_down_rounded,
-                                      size: 18, color: Colors.white),
+                                  Icon(
+                                    Icons.keyboard_arrow_down_rounded,
+                                    size: 18,
+                                    color: Colors.white,
+                                  ),
                                 ],
                               ),
                             ),
@@ -132,22 +140,26 @@ class HistoryPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 18),
 
-                        const Text('Today',
-                            style: TextStyle(color: Colors.white70, fontSize: 13)),
+                        const Text(
+                          'Today',
+                          style: TextStyle(color: Colors.white70, fontSize: 13),
+                        ),
                         const SizedBox(height: 10),
                         ...today.map(
-                              (t) => Padding(
+                          (t) => Padding(
                             padding: const EdgeInsets.only(bottom: 16),
                             child: TransactionItem(data: t),
                           ),
                         ),
 
                         const SizedBox(height: 8),
-                        const Text('June 13th',
-                            style: TextStyle(color: Colors.white70, fontSize: 13)),
+                        const Text(
+                          'June 13th',
+                          style: TextStyle(color: Colors.white70, fontSize: 13),
+                        ),
                         const SizedBox(height: 10),
                         ...june13.map(
-                              (t) => Padding(
+                          (t) => Padding(
                             padding: const EdgeInsets.only(bottom: 16),
                             child: TransactionItem(data: t),
                           ),

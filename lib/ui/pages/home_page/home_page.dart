@@ -35,14 +35,15 @@ class HomePage extends StatelessWidget {
 
                   const Text(
                     'This Month',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
                   ),
                   const SizedBox(height: 18),
 
-                  const _Chart(
-                    fraudRatio: 0.5,
-                    totalText: '—',
-                  ),
+                  const _Chart(fraudRatio: 0.5, totalText: '—'),
                   const SizedBox(height: 10),
                 ],
               ),
@@ -57,9 +58,19 @@ class HomePage extends StatelessWidget {
     return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Good evening,', style: TextStyle(color: Colors.white70, fontSize: 18)),
+        Text(
+          'Good evening,',
+          style: TextStyle(color: Colors.white70, fontSize: 18),
+        ),
         SizedBox(height: 2),
-        Text('User', style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)),
+        Text(
+          'User',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ],
     );
   }
@@ -81,7 +92,7 @@ class _Chart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sweepFraud = 2 * pi * fraudRatio.clamp(0.0, 1.0);
-    final sweepSafe  = 2 * pi - sweepFraud;
+    final sweepSafe = 2 * pi - sweepFraud;
 
     return Center(
       child: SizedBox(
@@ -99,7 +110,11 @@ class _Chart extends StatelessWidget {
 
             _arc(color: fraudColor, start: -pi / 2, sweep: sweepFraud),
 
-            _arc(color: safeColor, start: -pi / 2 + sweepFraud, sweep: sweepSafe),
+            _arc(
+              color: safeColor,
+              start: -pi / 2 + sweepFraud,
+              sweep: sweepSafe,
+            ),
 
             Container(
               width: 240,
@@ -116,7 +131,11 @@ class _Chart extends StatelessWidget {
               children: [
                 Text(
                   totalText,
-                  style: const TextStyle(fontSize: 38, fontWeight: FontWeight.w800, color: Colors.white),
+                  style: const TextStyle(
+                    fontSize: 38,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 Row(
@@ -139,8 +158,15 @@ class _Chart extends StatelessWidget {
     );
   }
 
-  Widget _arc({required Color color, required double start, required double sweep}) {
-    return CustomPaint(size: const Size(240, 240), painter: _ArcPainter(color: color, start: start, sweep: sweep));
+  Widget _arc({
+    required Color color,
+    required double start,
+    required double sweep,
+  }) {
+    return CustomPaint(
+      size: const Size(240, 240),
+      painter: _ArcPainter(color: color, start: start, sweep: sweep),
+    );
   }
 }
 
@@ -150,7 +176,11 @@ class _LegendDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(width: 10, height: 10, decoration: BoxDecoration(color: color, shape: BoxShape.circle));
+    return Container(
+      width: 10,
+      height: 10,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    );
   }
 }
 
@@ -170,7 +200,12 @@ class _ArcPainter extends CustomPainter {
       ..strokeWidth = stroke;
 
     final inset = stroke / 2 + 2;
-    final r = Rect.fromLTWH(inset, inset, size.width - inset * 2, size.height - inset * 2);
+    final r = Rect.fromLTWH(
+      inset,
+      inset,
+      size.width - inset * 2,
+      size.height - inset * 2,
+    );
     canvas.drawArc(r, start, sweep, false, paint);
   }
 
