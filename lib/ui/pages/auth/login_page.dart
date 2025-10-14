@@ -157,9 +157,15 @@ class _Button extends StatelessWidget {
             borderRadius: BorderRadius.circular(22),
           ),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          alignment: Alignment.center,
         ),
         onPressed: onPressed,
-        child: Text(label),
+        child: Center(
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+          ),
+        ),
       ),
     );
   }

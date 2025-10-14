@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:creditech_capstone_project/controller/auth_controller.dart';
+import 'package:creditech_capstone_project/ui/pages/auth/login_page_new.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -290,7 +291,12 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.pop(context);
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginPageNew(),
+                            ),
+                          );
                         },
                         child: const Text(
                           'Sign In',

@@ -27,6 +27,11 @@ class _LoginPageNewState extends State<LoginPageNew> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF141414),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -266,7 +271,7 @@ class _LoginPageNewState extends State<LoginPageNew> {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                               builder: (context) => const RegisterPage(),
