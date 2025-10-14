@@ -74,7 +74,7 @@ class FirestoreService {
         'fullName': user.displayName ?? '',
         'nickName': firstName,
         'email': user.email ?? '',
-        'phone': user.phoneNumber ?? '',
+        'phone': user.phoneNumber ?? '+62',
         'photoURL': user.photoURL,
         'provider': 'google',
         'updatedAt': FieldValue.serverTimestamp(),

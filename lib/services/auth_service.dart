@@ -3,7 +3,13 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    // Specify scopes if needed
+    scopes: [
+      'email',
+      'profile',
+    ],
+  );
 
   // Get current user
   User? get currentUser => _auth.currentUser;
@@ -46,6 +52,9 @@ class AuthService {
   // Sign in with Google
   Future<UserCredential?> signInWithGoogle() async {
     try {
+      // First, sign out from any existing Google sessions
+      await _googleSignIn.signOut();
+      
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
@@ -57,6 +66,11 @@ class AuthService {
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
+      // Check if we have valid tokens
+      if (googleAuth.accessToken == null || googleAuth.idToken == null) {
+        throw Exception('Failed to obtain Google authentication tokens');
+      }
+
       // Create a new credential
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
@@ -65,8 +79,68 @@ class AuthService {
 
       // Sign in to Firebase with the Google credential
       return await _auth.signInWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      // More detailed Firebase Auth error handling
+      String firebaseError = 'Firebase authentication failed';
+      switch (e.code) {
+        case 'account-exists-with-different-credential':
+          firebaseError = 'An account already exists with the same email but different sign-in credentials.';
+          break;
+        case 'invalid-credential':
+          firebaseError = 'The credential received is malformed or has expired.';
+          break;
+        case 'operation-not-allowed':
+          firebaseError = 'Google sign-in is not enabled for this project.';
+          break;
+        case 'user-disabled':
+          firebaseError = 'The user account has been disabled.';
+          break;
+        case 'user-not-found':
+          firebaseError = 'No user record found.';
+          break;
+        case 'wrong-password':
+          firebaseError = 'Wrong password provided.';
+          break;
+        case 'invalid-verification-code':
+          firebaseError = 'Invalid verification code.';
+          break;
+        case 'invalid-verification-id':
+          firebaseError = 'Invalid verification ID.';
+          break;
+        default:
+          firebaseError = 'Firebase authentication failed: ${e.code} - ${e.message}';
+      }
+      throw Exception(firebaseError);
     } catch (e) {
-      throw Exception('Google sign-in failed: $e');
+      // Handle specific Google Sign-In errors with more details
+      String errorMessage = 'Google sign-in failed';
+      String errorDetails = e.toString();
+      
+      if (errorDetails.contains('PlatformException')) {
+        if (errorDetails.contains('sign_in_failed')) {
+          if (errorDetails.contains('ApiException: 10')) {
+            errorMessage = 'Google Sign-In configuration error (Code 10). The SHA-1 fingerprint may not be properly configured in Firebase Console.';
+          } else if (errorDetails.contains('ApiException: 7')) {
+            errorMessage = 'Network error. Please check your internet connection.';
+          } else if (errorDetails.contains('ApiException: 12501')) {
+            errorMessage = 'Google Sign-In was canceled by user.';
+          } else if (errorDetails.contains('ApiException: 16')) {
+            errorMessage = 'Google Sign-In internal error. Please try again.';
+          } else {
+            errorMessage = 'Google Sign-In failed with error: $errorDetails';
+          }
+        } else if (errorDetails.contains('sign_in_canceled')) {
+          errorMessage = 'Google Sign-In was canceled.';
+        } else {
+          errorMessage = 'Google Sign-In platform error: $errorDetails';
+        }
+      } else if (errorDetails.contains('network_error')) {
+        errorMessage = 'Network error. Please check your internet connection and try again.';
+      } else {
+        errorMessage = 'Google sign-in failed: $errorDetails';
+      }
+      
+      throw Exception(errorMessage);
     }
   }
 

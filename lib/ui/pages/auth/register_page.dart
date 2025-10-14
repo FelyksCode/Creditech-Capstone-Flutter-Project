@@ -419,55 +419,123 @@ class _RegisterPageState extends State<RegisterPage> {
     final authController = context.read<AuthController>();
     authController.clearError();
 
-    // Initialize dependencies before Google sign-in
-    authController.initializeDependencies(context);
+    try {
+      // Initialize dependencies before Google sign-in
+      authController.initializeDependencies(context);
 
-    final success = await authController.signInWithGoogle();
+      final success = await authController.signInWithGoogle();
 
-    if (success) {
-      if (mounted) {
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white),
-                SizedBox(width: 12),
-                Text('Successfully signed up with Google!'),
-              ],
+      if (success) {
+        if (mounted) {
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.white),
+                  SizedBox(width: 12),
+                  Text('Successfully signed up with Google!'),
+                ],
+              ),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
             ),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
-        );
-        Navigator.pushReplacementNamed(context, '/');
-      }
-    } else {
-      // Show error notification
-      if (mounted && authController.errorMessage != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.error_outline, color: Colors.white),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
+          );
+          Navigator.pushReplacementNamed(context, '/');
+        }
+      } else {
+        // Show error notification
+        if (mounted && authController.errorMessage != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.error_outline, color: Colors.white),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Google Sign-Up Failed',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
                     authController.errorMessage!,
                     style: const TextStyle(color: Colors.white),
                   ),
+                  if (authController.errorMessage!.contains('configuration error') ||
+                      authController.errorMessage!.contains('Code 10'))
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        'Please ensure SHA-1 fingerprint is added to Firebase Console.',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 6),
+              action: SnackBarAction(
+                label: 'DISMISS',
+                textColor: Colors.white,
+                onPressed: () {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                },
+              ),
+            ),
+          );
+        } else {
+          // Show generic error if no specific error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.error_outline, color: Colors.white),
+                  SizedBox(width: 12),
+                  Text('Google Sign-Up failed. Please try again.'),
+                ],
+              ),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Catch any unexpected errors
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.bug_report, color: Colors.white),
+                    SizedBox(width: 12),
+                    Text('Unexpected Error', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Error: ${e.toString()}',
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
                 ),
               ],
             ),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 4),
-            action: SnackBarAction(
-              label: 'DISMISS',
-              textColor: Colors.white,
-              onPressed: () {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              },
-            ),
+            backgroundColor: Colors.red.shade800,
+            duration: const Duration(seconds: 5),
           ),
         );
       }

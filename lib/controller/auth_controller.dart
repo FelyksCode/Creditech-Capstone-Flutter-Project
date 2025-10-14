@@ -84,8 +84,10 @@ class AuthController extends ChangeNotifier {
       );
 
       if (credential != null && credential.user != null) {
-        // For login, we don't need to save/overwrite profile data
-        // The profile data should already exist from registration
+        // For login, refresh profile data for the current user
+        if (_profileProvider != null) {
+          await _profileProvider!.refreshUserData();
+        }
         return true;
       }
 
@@ -141,6 +143,8 @@ class AuthController extends ChangeNotifier {
         // For Google sign-in, only save profile data if it's a new user
         if (_profileProvider != null) {
           await _profileProvider!.saveGoogleAccountDataIfNew(credential.user!);
+          // Refresh profile data to ensure latest data is loaded
+          await _profileProvider!.refreshUserData();
         }
         return true;
       }
@@ -159,6 +163,16 @@ class AuthController extends ChangeNotifier {
     try {
       _setLoading(true);
       await _authService.signOut();
+      
+      // Clear any stored profile data
+      if (_profileProvider != null) {
+        _profileProvider!.resetProfile();
+      }
+      
+      // Clear auth controller state
+      _user = null;
+      _errorMessage = null;
+      
     } catch (e) {
       _setError(e.toString());
     } finally {

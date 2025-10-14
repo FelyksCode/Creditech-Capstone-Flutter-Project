@@ -52,6 +52,20 @@ class ProfileProvider extends ChangeNotifier {
   ProfileProvider() {
     // Initialize with Firebase user data if available
     _initializeUserData();
+    
+    // Listen to auth state changes to reset profile data when user logs out
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user == null) {
+        // User logged out, reset to default values
+        _resetToDefaults();
+      } else {
+        // User logged in or changed, reinitialize user data
+        // Add a small delay to ensure FirestoreService is ready
+        Future.delayed(const Duration(milliseconds: 100), () {
+          _initializeUserData();
+        });
+      }
+    });
   }
 
   // Set the FirestoreService instance from Provider
@@ -59,6 +73,17 @@ class ProfileProvider extends ChangeNotifier {
     _firestoreService = firestoreService;
     // Re-initialize user data when FirestoreService is set
     _initializeUserData();
+  }
+
+  // Public method to refresh user data (useful after login with different account)
+  Future<void> refreshUserData() async {
+    await _initializeUserData();
+  }
+
+  // Force clear all data and reload for current user
+  Future<void> forceReloadUserData() async {
+    _resetToDefaults();
+    await _initializeUserData();
   }
 
   Future<void> _initializeUserData() async {
@@ -83,6 +108,32 @@ class ProfileProvider extends ChangeNotifier {
       _loadProfileFromFirebaseAuth(user);
       notifyListeners();
     }
+  }
+
+  // Private method to reset to defaults when user logs out
+  void _resetToDefaults() {
+    _fullName = '';
+    _nickName = '';
+    _email = '';
+    _phone = '';
+    _country = null;
+    _photoURL = null;
+    
+    // Reset settings to defaults
+    _generalNotificationOn = true;
+    _language = 'English';
+    _themeLabel = 'Light mode';
+    _soundOn = false;
+    _vibrateOn = true;
+    _appUpdates = false;
+    _billReminder = true;
+    _promotion = true;
+    _discountAvailable = false;
+    _paymentRequest = false;
+    _newService = false;
+    _newTips = true;
+    
+    notifyListeners();
   }
 
   void _loadProfileFromFirestore(Map<String, dynamic> data) {
