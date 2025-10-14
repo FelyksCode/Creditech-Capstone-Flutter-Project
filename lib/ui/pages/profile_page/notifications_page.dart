@@ -1,71 +1,69 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:creditech_capstone_project/controller/profile_provider.dart';
 
-class NotificationsPage extends StatefulWidget {
+class NotificationsPage extends StatelessWidget {
   const NotificationsPage({super.key, required this.initialGeneralOn});
   final bool initialGeneralOn;
 
   @override
-  State<NotificationsPage> createState() => _NotificationsPageState();
-}
-
-class _NotificationsPageState extends State<NotificationsPage> {
-  late bool generalOn = widget.initialGeneralOn;
-  bool soundOn = false;
-  bool vibrateOn = true;
-
-  bool appUpdates = false;
-  bool billReminder = true;
-  bool promotion = true;
-  bool discountAvailable = false;
-  bool paymentRequest = false;
-
-  bool newService = false;
-  bool newTips = true;
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF141414),
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: const Color(0xFF141414),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-          onPressed: () => Navigator.pop(context, generalOn),
-        ),
-        title: const Text('Notifications',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
-        centerTitle: true,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-        children: [
-          _SectionHeader('Common'),
-          _SwitchTile('General Notification', generalOn, (v) => setState(() => generalOn = v)),
-          _DividerLine(),
-          _SwitchTile('Sound', soundOn, (v) => setState(() => soundOn = v)),
-          _DividerLine(),
-          _SwitchTile('Vibrate', vibrateOn, (v) => setState(() => vibrateOn = v)),
+    return Consumer<ProfileProvider>(
+      builder: (context, profileProvider, child) {
+        return Scaffold(
+          backgroundColor: const Color(0xFF141414),
+          appBar: AppBar(
+            elevation: 0,
+            backgroundColor: const Color(0xFF141414),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+              onPressed: () => Navigator.pop(context, profileProvider.generalNotificationOn),
+            ),
+            title: const Text('Notifications',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+            centerTitle: true,
+          ),
+          body: ListView(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+            children: [
+              _SectionHeader('Common'),
+              _SwitchTile('General Notification', profileProvider.generalNotificationOn, 
+                  (v) => profileProvider.updateGeneralNotification(v)),
+              _DividerLine(),
+              _SwitchTile('Sound', profileProvider.soundOn, 
+                  (v) => profileProvider.updateSoundNotification(v)),
+              _DividerLine(),
+              _SwitchTile('Vibrate', profileProvider.vibrateOn, 
+                  (v) => profileProvider.updateVibrateNotification(v)),
 
-          const SizedBox(height: 18),
-          _SectionHeader('System & services update'),
-          _SwitchTile('App updates', appUpdates, (v) => setState(() => appUpdates = v)),
-          _DividerLine(),
-          _SwitchTile('Bill Reminder', billReminder, (v) => setState(() => billReminder = v)),
-          _DividerLine(),
-          _SwitchTile('Promotion', promotion, (v) => setState(() => promotion = v)),
-          _DividerLine(),
-          _SwitchTile('Discount Available', discountAvailable, (v) => setState(() => discountAvailable = v)),
-          _DividerLine(),
-          _SwitchTile('Payment Request', paymentRequest, (v) => setState(() => paymentRequest = v)),
+              const SizedBox(height: 18),
+              _SectionHeader('System & services update'),
+              _SwitchTile('App updates', profileProvider.appUpdates, 
+                  (v) => profileProvider.updateAppUpdates(v)),
+              _DividerLine(),
+              _SwitchTile('Bill Reminder', profileProvider.billReminder, 
+                  (v) => profileProvider.updateBillReminder(v)),
+              _DividerLine(),
+              _SwitchTile('Promotion', profileProvider.promotion, 
+                  (v) => profileProvider.updatePromotion(v)),
+              _DividerLine(),
+              _SwitchTile('Discount Available', profileProvider.discountAvailable, 
+                  (v) => profileProvider.updateDiscountAvailable(v)),
+              _DividerLine(),
+              _SwitchTile('Payment Request', profileProvider.paymentRequest, 
+                  (v) => profileProvider.updatePaymentRequest(v)),
 
-          const SizedBox(height: 18),
-          _SectionHeader('Others'),
-          _SwitchTile('New Service Available', newService, (v) => setState(() => newService = v)),
-          _DividerLine(),
-          _SwitchTile('New Tips Available', newTips, (v) => setState(() => newTips = v)),
-        ],
-      ),
+              const SizedBox(height: 18),
+              _SectionHeader('Others'),
+              _SwitchTile('New Service Available', profileProvider.newService, 
+                  (v) => profileProvider.updateNewService(v)),
+              _DividerLine(),
+              _SwitchTile('New Tips Available', profileProvider.newTips, 
+                  (v) => profileProvider.updateNewTips(v)),
+            ],
+          ),
+        );
+      },
     );
   }
 }

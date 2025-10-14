@@ -335,6 +335,9 @@ class _RegisterPageState extends State<RegisterPage> {
       final authController = context.read<AuthController>();
       authController.clearError();
       
+      // Initialize dependencies before registration
+      authController.initializeDependencies(context);
+      
       final success = await authController.registerWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text,
@@ -394,6 +397,9 @@ class _RegisterPageState extends State<RegisterPage> {
   void _signUpWithGoogle() async {
     final authController = context.read<AuthController>();
     authController.clearError();
+    
+    // Initialize dependencies before Google sign-in
+    authController.initializeDependencies(context);
     
     final success = await authController.signInWithGoogle();
 

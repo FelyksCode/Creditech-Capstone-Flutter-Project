@@ -317,6 +317,9 @@ class _LoginPageNewState extends State<LoginPageNew> {
       final authController = context.read<AuthController>();
       authController.clearError();
       
+      // Initialize dependencies before sign-in
+      authController.initializeDependencies(context);
+      
       final success = await authController.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text,
@@ -376,6 +379,9 @@ class _LoginPageNewState extends State<LoginPageNew> {
   void _signInWithGoogle() async {
     final authController = context.read<AuthController>();
     authController.clearError();
+    
+    // Initialize dependencies before Google sign-in
+    authController.initializeDependencies(context);
     
     final success = await authController.signInWithGoogle();
 

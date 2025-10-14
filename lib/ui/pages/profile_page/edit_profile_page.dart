@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:creditech_capstone_project/ui/widgets/dust_background.dart';
+import 'package:creditech_capstone_project/controller/profile_provider.dart';
+import 'package:creditech_capstone_project/ui/widgets/notification_helper.dart';
 
 class EditProfileResult {
   final String fullName;
@@ -33,14 +36,24 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
+  final _formKey = GlobalKey<FormState>();
   late final TextEditingController _name =
-  TextEditingController(text: widget.initialFullName);
+      TextEditingController(text: widget.initialFullName);
   late final TextEditingController _nick =
-  TextEditingController(text: widget.initialNickName);
+      TextEditingController(text: widget.initialNickName);
   late final TextEditingController _email =
-  TextEditingController(text: widget.initialEmail);
+      TextEditingController(text: widget.initialEmail);
   late final TextEditingController _phone =
-  TextEditingController(text: widget.initialPhone);
+      TextEditingController(text: widget.initialPhone);
+
+  @override
+  void dispose() {
+    _name.dispose();
+    _nick.dispose();
+    _email.dispose();
+    _phone.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,57 +81,98 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
           SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-            child: Column(
-              children: [
-                _Input(label: 'Full name', controller: _name),
-                const SizedBox(height: 12),
-                _Input(label: 'Nick name', controller: _nick),
-                const SizedBox(height: 12),
-                _Input(
-                    label: 'Label',
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  _Input(
+                    label: 'Full name', 
+                    controller: _name,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Full name is required';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _Input(label: 'Nick name', controller: _nick),
+                  const SizedBox(height: 12),
+                  _Input(
+                    label: 'Email',
                     controller: _email,
-                    keyboard: TextInputType.emailAddress),
-                const SizedBox(height: 12),
-                _PhoneInput(label: 'Phone number', controller: _phone),
+                    keyboard: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Email is required';
+                      }
+                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                        return 'Please enter a valid email format';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _PhoneInput(label: 'Phone number', controller: _phone),
                 const SizedBox(height: 12),
 
-                Row(
-                  children: const [
-                    Expanded(child: _Dropdownish(label: 'Genre', valueText: 'Female')),
-                    SizedBox(width: 12),
-                    Expanded(child: _Dropdownish(label: 'Country', valueText: 'United States')),
-                  ],
-                ),
+                const _Dropdownish(label: 'Country', valueText: 'Indonesia'),
                 const SizedBox(height: 12),
                 const _Input(label: 'Address', hint: '45 New Avenue, New York'),
 
-                const SizedBox(height: 28),
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF7FA9FF),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                  const SizedBox(height: 28),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF7FA9FF),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      onPressed: () {
+                        // Validate form
+                        if (_formKey.currentState!.validate()) {
+                          // Update profile using Provider
+                          final profileProvider = context.read<ProfileProvider>();
+                          profileProvider.updateProfile(
+                            fullName: _name.text.trim(),
+                            nickName: _nick.text.trim(),
+                            email: _email.text.trim(),
+                            phone: _phone.text.trim(),
+                          );
+
+                          // Show success notification
+                          NotificationHelper.showSuccessNotification(
+                            context,
+                            'Profile updated successfully!',
+                          );
+
+                          // Return the result for backward compatibility
+                          Navigator.pop(
+                            context,
+                            EditProfileResult(
+                              fullName: _name.text.trim(),
+                              nickName: _nick.text.trim(),
+                              email: _email.text.trim(),
+                              phone: _phone.text.trim(),
+                            ),
+                          );
+                        } else {
+                          // Show validation error
+                          NotificationHelper.showErrorNotification(
+                            context,
+                            'Please fix the errors in the form',
+                          );
+                        }
+                      },
+                      child: const Text('SUBMIT',
+                          style: TextStyle(fontWeight: FontWeight.w700)),
                     ),
-                    onPressed: () {
-                      Navigator.pop(
-                        context,
-                        EditProfileResult(
-                          fullName: _name.text.trim(),
-                          nickName: _nick.text.trim(),
-                          email: _email.text.trim(),
-                          phone: _phone.text.trim(),
-                        ),
-                      );
-                    },
-                    child: const Text('SUBMIT',
-                        style: TextStyle(fontWeight: FontWeight.w700)),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -130,17 +184,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
 class _Input extends StatelessWidget {
   const _Input({
-    super.key,
     required this.label,
     this.hint,
     this.controller,
     this.keyboard,
+    this.validator,
   });
 
   final String label;
   final String? hint;
   final TextEditingController? controller;
   final TextInputType? keyboard;
+  final String? Function(String?)? validator;
 
   @override
   Widget build(BuildContext context) {
@@ -149,11 +204,12 @@ class _Input extends StatelessWidget {
       children: [
         _Label(label),
         const SizedBox(height: 8),
-        TextField(
+        TextFormField(
           controller: controller,
           keyboardType: keyboard,
           style: const TextStyle(color: Colors.white),
           decoration: _inputDecoration(hint: hint ?? ''),
+          validator: validator,
         ),
       ],
     );
@@ -179,7 +235,7 @@ class _PhoneInput extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               alignment: Alignment.center,
               decoration: _filledBoxDecoration,
-              child: const Text('🇺🇸', style: TextStyle(fontSize: 20)),
+              child: const Text('🇮🇩', style: TextStyle(fontSize: 20)),
             ),
             const SizedBox(width: 10),
             Expanded(

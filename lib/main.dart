@@ -1,4 +1,5 @@
 import 'package:creditech_capstone_project/firebase_options.dart';
+import 'package:creditech_capstone_project/services/firestore_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:creditech_capstone_project/controller/index_nav_provider.dart';
 import 'package:creditech_capstone_project/controller/auth_controller.dart';
+import 'package:creditech_capstone_project/controller/profile_provider.dart';
 import 'package:creditech_capstone_project/ui/pages/auth/login_page.dart';
 import 'package:creditech_capstone_project/ui/widgets/auth_wrapper.dart';
 import 'package:creditech_capstone_project/static/navigation_route.dart';
@@ -21,7 +23,12 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        // Core services
+        Provider(create: (_) => FirestoreService()),
+        
+        // State providers
         ChangeNotifierProvider(create: (_) => IndexNavProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => AuthController()),
       ],
       child: const MainApp(),

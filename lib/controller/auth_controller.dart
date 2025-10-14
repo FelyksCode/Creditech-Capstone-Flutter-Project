@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import 'package:creditech_capstone_project/services/auth_service.dart';
+import 'package:creditech_capstone_project/services/firestore_service.dart';
+import 'package:creditech_capstone_project/controller/profile_provider.dart';
 
 class AuthController extends ChangeNotifier {
   final AuthService _authService = AuthService();
+  ProfileProvider? _profileProvider;
   
   bool _isLoading = false;
   String? _errorMessage;
@@ -24,6 +28,21 @@ class AuthController extends ChangeNotifier {
     
     // Initialize current user
     _user = _authService.currentUser;
+  }
+
+  // Set profile provider for authentication data integration
+  void setProfileProvider(ProfileProvider profileProvider) {
+    _profileProvider = profileProvider;
+  }
+
+  // Initialize dependencies from Provider context
+  void initializeDependencies(BuildContext context) {
+    final firestoreService = Provider.of<FirestoreService>(context, listen: false);
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    
+    // Set up dependencies
+    profileProvider.setFirestoreService(firestoreService);
+    setProfileProvider(profileProvider);
   }
 
   // Set loading state
@@ -58,7 +77,13 @@ class AuthController extends ChangeNotifier {
         password: password,
       );
       
-      return credential != null;
+      if (credential != null && credential.user != null) {
+        // For login, we don't need to save/overwrite profile data
+        // The profile data should already exist from registration
+        return true;
+      }
+      
+      return false;
     } catch (e) {
       _setError(e.toString());
       return false;
@@ -75,13 +100,21 @@ class AuthController extends ChangeNotifier {
     try {
       _setLoading(true);
       _setError(null);
-      
+
       final credential = await _authService.registerWithEmailAndPassword(
         email: email,
         password: password,
       );
       
-      return credential != null;
+      if (credential != null && credential.user != null) {
+        // Save email/password user data to Firestore if profile provider is available
+        if (_profileProvider != null) {
+          await _profileProvider!.saveEmailPasswordUserData(credential.user!);
+        }
+        return true;
+      }
+      
+      return false;
     } catch (e) {
       _setError(e.toString());
       return false;
@@ -98,7 +131,15 @@ class AuthController extends ChangeNotifier {
       
       final credential = await _authService.signInWithGoogle();
       
-      return credential != null;
+      if (credential != null && credential.user != null) {
+        // For Google sign-in, only save profile data if it's a new user
+        if (_profileProvider != null) {
+          await _profileProvider!.saveGoogleAccountDataIfNew(credential.user!);
+        }
+        return true;
+      }
+      
+      return false;
     } catch (e) {
       _setError(e.toString());
       return false;
