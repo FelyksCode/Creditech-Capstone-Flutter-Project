@@ -12,44 +12,46 @@ class HomePage extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Stack(
-        children: [
-          const Positioned.fill(
-            child: DustBackground(
-              assetPath: 'assets/images/img_1.png',
-              opacity: 0.06,
-            ),
-          ),
-
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _header(),
-                  const SizedBox(height: 28),
-
-                  const GlassyCard(),
-                  const SizedBox(height: 42),
-
-                  const Text(
-                    'This Month',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-
-                  const _Chart(fraudRatio: 0.5, totalText: '—'),
-                  const SizedBox(height: 10),
-                ],
+      body: SizedBox.expand(
+        child: Stack(
+          children: [
+            const Positioned.fill(
+              child: DustBackground(
+                assetPath: 'assets/images/img_1.png',
+                opacity: 0.06,
               ),
             ),
-          ),
-        ],
+        
+            SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _header(),
+                    const SizedBox(height: 28),
+        
+                    const GlassyCard(),
+                    const SizedBox(height: 42),
+        
+                    const Text(
+                      'This Month',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+        
+                    const _Chart(fraudRatio: 0.5, totalText: '—'),
+                    const SizedBox(height: 10),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

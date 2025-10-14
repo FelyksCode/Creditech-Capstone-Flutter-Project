@@ -63,11 +63,13 @@ class UploadFileItem extends StatelessWidget {
                       const SizedBox(height: 6),
                       Row(
                         children: [
-                          Text(
-                            data.sizeText,
-                            style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontSize: 12,
+                          Flexible(
+                            child: Text(
+                              data.sizeText,
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
                           if (isUploading) ...[
@@ -78,11 +80,14 @@ class UploadFileItem extends StatelessWidget {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             ),
                             const SizedBox(width: 4),
-                            Text(
-                              'Uploading...',
-                              style: TextStyle(
-                                color: Colors.grey.shade700,
-                                fontSize: 12,
+                            Flexible(
+                              child: Text(
+                                'Uploading...',
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Colors.grey.shade700,
+                                  fontSize: 12,
+                                ),
                               ),
                             ),
                           ],
