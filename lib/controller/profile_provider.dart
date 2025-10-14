@@ -184,6 +184,7 @@ class ProfileProvider extends ChangeNotifier {
           email: email,
           phone: phone,
           country: _country,
+          photoURL: _photoURL,
         );
       } catch (e) {
         // Handle error silently for now, could add error state management
@@ -218,8 +219,18 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updatePhotoURL(String? photoURL) {
+  Future<void> updatePhotoURL(String? photoURL) async {
     _photoURL = photoURL;
+    
+    // Save to Firestore
+    if (_firestoreService != null) {
+      try {
+        await _firestoreService!.updateProfile({'photoURL': photoURL});
+      } catch (e) {
+        // Handle error silently for now, could add error state management
+      }
+    }
+    
     notifyListeners();
   }
 

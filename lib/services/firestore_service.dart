@@ -18,6 +18,7 @@ class FirestoreService {
     required String email,
     required String phone,
     String? country,
+    String? photoURL,
   }) async {
     if (currentUserId == null) return;
 
@@ -29,6 +30,7 @@ class FirestoreService {
         'email': email,
         'phone': phone,
         'country': country,
+        'photoURL': photoURL,
         'updatedAt': FieldValue.serverTimestamp(),
         'createdAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));

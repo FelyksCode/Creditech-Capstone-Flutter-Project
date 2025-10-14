@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'edit_profile_page.dart';
 import 'notifications_page.dart';
 import 'package:creditech_capstone_project/ui/widgets/dust_background.dart';
+import 'package:creditech_capstone_project/ui/widgets/loading_dialog.dart';
 import 'package:creditech_capstone_project/controller/auth_controller.dart';
 import 'package:creditech_capstone_project/controller/profile_provider.dart';
 import 'package:creditech_capstone_project/static/navigation_route.dart';
+import 'package:creditech_capstone_project/services/image_picker_service.dart';
+import 'package:creditech_capstone_project/services/cloudinary_service.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -48,6 +52,87 @@ class ProfilePage extends StatelessWidget {
     }
   }
 
+  void _handleUpdateProfilePhoto(BuildContext context) async {
+    try {
+      print('Starting photo update process...');
+      
+      // Show image picker bottom sheet
+      final imageFile = await ImagePickerService.showImageSourceBottomSheet(context);
+      
+      print('Image file selected: ${imageFile?.path}');
+      
+      if (imageFile != null && context.mounted) {
+        // Verify file exists before proceeding
+        if (!await imageFile.exists()) {
+          print('Selected file does not exist!');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Selected file is not available. Please try again.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          return;
+        }
+        
+        print('File exists, proceeding with upload...');
+        
+        // Show loading dialog
+        LoadingDialog.show(context, message: 'Uploading photo...');
+        
+        // Get current user ID
+        final userId = FirebaseAuth.instance.currentUser?.uid;
+        print('User ID: $userId');
+        
+        // Upload to Cloudinary
+        final photoURL = await CloudinaryService.uploadImage(imageFile, userId: userId);
+        
+        print('Upload result: $photoURL');
+        
+        if (context.mounted) {
+          LoadingDialog.hide(context);
+          
+          if (photoURL != null && photoURL.isNotEmpty) {
+            // Update profile provider
+            final profileProvider = context.read<ProfileProvider>();
+            await profileProvider.updatePhotoURL(photoURL);
+            
+            print('Profile updated successfully');
+            
+            // Show success message
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Profile photo updated successfully!'),
+                backgroundColor: Color(0xFF4169E1),
+              ),
+            );
+          } else {
+            print('Upload failed - no URL returned');
+            // Show error message
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Failed to upload photo. Please try again.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      } else {
+        print('No image file selected or context not mounted');
+      }
+    } catch (e) {
+      print('Error in photo update process: $e');
+      if (context.mounted) {
+        LoadingDialog.hide(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('An error occurred: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ProfileProvider>(
@@ -82,48 +167,54 @@ class ProfilePage extends StatelessWidget {
                       Center(
                         child: Column(
                           children: [
-                            Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                Container(
-                                  width: 92,
-                                  height: 92,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Color(0xFF202020),
-                                    image: DecorationImage(
-                                      image: AssetImage(
-                                        'assets/images/img.png',
-                                      ),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  right: -2,
-                                  bottom: -2,
-                                  child: Container(
-                                    width: 28,
-                                    height: 28,
+                            GestureDetector(
+                              onTap: () => _handleUpdateProfilePhoto(context),
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Container(
+                                    width: 92,
+                                    height: 92,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: Colors.white,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.35),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 3),
-                                        ),
-                                      ],
-                                    ),
-                                    child: const Icon(
-                                      Icons.edit,
-                                      size: 16,
-                                      color: Colors.black87,
+                                      color: const Color(0xFF202020),
+                                      image: profileProvider.photoURL != null
+                                          ? DecorationImage(
+                                              image: NetworkImage(profileProvider.photoURL!),
+                                              fit: BoxFit.cover,
+                                            )
+                                          : const DecorationImage(
+                                              image: AssetImage('assets/images/img.png'),
+                                              fit: BoxFit.cover,
+                                            ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                  Positioned(
+                                    right: -2,
+                                    bottom: -2,
+                                    child: Container(
+                                      width: 28,
+                                      height: 28,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.35),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 3),
+                                          ),
+                                        ],
+                                      ),
+                                      child: const Icon(
+                                        Icons.camera_alt,
+                                        size: 16,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                             const SizedBox(height: 14),
                             Text(
