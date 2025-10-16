@@ -1,8 +1,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'glassy_card.dart';
 import 'package:creditech_capstone_project/ui/widgets/dust_background.dart';
+import 'package:creditech_capstone_project/controller/profile_provider.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -57,23 +59,29 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _header() {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Good evening,',
-          style: TextStyle(color: Colors.white70, fontSize: 18),
-        ),
-        SizedBox(height: 2),
-        Text(
-          'User',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
+    return Consumer<ProfileProvider>(
+      builder: (context, profileProvider, child) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Good evening,',
+              style: TextStyle(color: Colors.white70, fontSize: 18),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              profileProvider.nickName.isNotEmpty 
+                  ? profileProvider.nickName 
+                  : profileProvider.fullName,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
