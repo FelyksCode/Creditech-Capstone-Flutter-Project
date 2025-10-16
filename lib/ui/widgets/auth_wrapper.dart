@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:creditech_capstone_project/controller/auth_controller.dart';
 import 'package:creditech_capstone_project/controller/profile_provider.dart';
+import 'package:creditech_capstone_project/controller/notification_provider.dart';
 import 'package:creditech_capstone_project/services/firestore_service.dart';
 import 'package:creditech_capstone_project/ui/pages/auth/login_page.dart';
 import 'package:creditech_capstone_project/ui/pages/main_page/main_page.dart';
@@ -31,6 +32,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
       final authController = Provider.of<AuthController>(context, listen: false);
       final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
       final firestoreService = Provider.of<FirestoreService>(context, listen: false);
+      final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
       
       // Ensure FirestoreService is connected to ProfileProvider
       profileProvider.setFirestoreService(firestoreService);
@@ -43,6 +45,11 @@ class _AuthWrapperState extends State<AuthWrapper> {
           print('User is authenticated, loading profile data from Firestore...');
           await profileProvider.refreshUserData();
           print('Profile data loaded successfully');
+          
+          // Initialize notification settings from SQLite
+          print('Initializing notification settings from SQLite...');
+          await notificationProvider.refreshNotificationState();
+          print('Notification settings loaded successfully');
         } catch (e) {
           print('Error loading user data from Firestore: $e');
           // Even if Firestore fails, we can still use Firebase Auth data

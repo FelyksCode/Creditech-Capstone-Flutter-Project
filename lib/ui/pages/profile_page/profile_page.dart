@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'edit_profile_page.dart';
-import 'notifications_page.dart';
 import 'package:creditech_capstone_project/ui/widgets/dust_background.dart';
 import 'package:creditech_capstone_project/ui/widgets/loading_dialog.dart';
 import 'package:creditech_capstone_project/controller/auth_controller.dart';
 import 'package:creditech_capstone_project/controller/profile_provider.dart';
+import 'package:creditech_capstone_project/controller/notification_provider.dart';
 import 'package:creditech_capstone_project/static/navigation_route.dart';
 import 'package:creditech_capstone_project/services/image_picker_service.dart';
 import 'package:creditech_capstone_project/services/cloudinary_service.dart';
@@ -135,8 +135,8 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ProfileProvider>(
-      builder: (context, profileProvider, child) {
+    return Consumer2<ProfileProvider, NotificationProvider>(
+      builder: (context, profileProvider, notificationProvider, child) {
         return Scaffold(
           backgroundColor: Colors.transparent,
           body: SizedBox.expand(
@@ -265,32 +265,14 @@ class ProfilePage extends StatelessWidget {
                               },
                             ),
                             _DividerRow(),
-                            _TileRow(
+                            _NotificationTileRow(
                               icon: Icons.notifications_none_rounded,
                               title: 'Notifications',
-                              trailingText: profileProvider.generalNotificationOn
-                                  ? 'ON'
-                                  : 'OFF',
-                              trailingTextColor:
-                                  profileProvider.generalNotificationOn
-                                  ? const Color(0xFF7FB1FF)
-                                  : Colors.white54,
-                              onTap: () async {
-                                final result = await Navigator.push<bool>(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => NotificationsPage(
-                                      initialGeneralOn:
-                                          profileProvider.generalNotificationOn,
-                                    ),
-                                  ),
-                                );
-                                if (result != null) {
-                                  profileProvider.updateGeneralNotification(
-                                    result,
-                                  );
-                                }
+                              value: notificationProvider.isNotificationEnabled,
+                              onChanged: (value) {
+                                notificationProvider.setNotificationEnabled(value);
                               },
+                              isLoading: notificationProvider.isLoading,
                             ),
                             
                           ],
@@ -322,6 +304,36 @@ class ProfilePage extends StatelessWidget {
             
                         const SizedBox(height: 14),
             
+                        // Test Notification Section
+                        // _TileGroup(
+                        //   children: [
+                        //     _TileRow(
+                        //       icon: notificationProvider.isNotificationEnabled 
+                        //           ? Icons.notifications_active 
+                        //           : Icons.notifications_off,
+                        //       title: 'Test Notification',
+                        //       trailingText: notificationProvider.isNotificationEnabled 
+                        //           ? 'TAP TO TEST' 
+                        //           : 'DISABLED',
+                        //       trailingTextColor: notificationProvider.isNotificationEnabled 
+                        //           ? const Color(0xFF4169E1) 
+                        //           : Colors.red,
+                        //       onTap: notificationProvider.isNotificationEnabled 
+                        //           ? () => notificationProvider.showTestNotification()
+                        //           : () {
+                        //               ScaffoldMessenger.of(context).showSnackBar(
+                        //                 const SnackBar(
+                        //                   content: Text('Please enable notifications first'),
+                        //                   backgroundColor: Colors.orange,
+                        //                 ),
+                        //               );
+                        //             },
+                        //     ),
+                        //   ],
+                        // ),
+            
+                        const SizedBox(height: 14),
+
                         _TileGroup(
                           children: [
                             _TileRow(
@@ -418,6 +430,65 @@ class _TileRow extends StatelessWidget {
             const Icon(Icons.chevron_right, color: Colors.white54, size: 20),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _NotificationTileRow extends StatelessWidget {
+  const _NotificationTileRow({
+    required this.icon,
+    required this.title,
+    required this.value,
+    required this.onChanged,
+    this.isLoading = false,
+  });
+
+  final IconData icon;
+  final String title;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.white, size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          isLoading
+              ? Transform.scale(
+                  scale: 0.6,
+                  child: const CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF4169E1)),
+                  ),
+                )
+              : Transform.scale(
+                  scale: 0.8,
+                  child: Switch(
+                    value: value,
+                    onChanged: onChanged,
+                    activeColor: Colors.white,
+                    activeTrackColor: const Color(0xFF4169E1),
+                    inactiveThumbColor: const Color(0xFF9E9E9E),
+                    inactiveTrackColor: const Color(0xFF2A2A2A),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ),
+        ],
       ),
     );
   }
