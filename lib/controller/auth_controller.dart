@@ -20,14 +20,29 @@ class AuthController extends ChangeNotifier {
   bool get isAuthenticated => _user != null;
 
   AuthController() {
+    // Initialize current user immediately
+    _user = _authService.currentUser;
+    
     // Listen to auth state changes
-    _authService.authStateChanges.listen((User? user) {
+    _authService.authStateChanges.listen((User? user) async {
       _user = user;
+      
+      // If user logs in and profile provider is set, refresh profile data
+      if (user != null && _profileProvider != null) {
+        try {
+          await _profileProvider!.refreshUserData();
+        } catch (e) {
+          print('Error refreshing user data: $e');
+        }
+      }
+      
+      // Clear profile data if user logs out
+      if (user == null && _profileProvider != null) {
+        _profileProvider!.resetProfile();
+      }
+      
       notifyListeners();
     });
-
-    // Initialize current user
-    _user = _authService.currentUser;
   }
 
   // Set profile provider for authentication data integration

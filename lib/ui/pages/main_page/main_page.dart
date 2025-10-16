@@ -52,7 +52,7 @@ class _MainPageState extends State<MainPage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.history),
-            activeIcon: Icon(Icons.history_edu),
+            activeIcon: Icon(Icons.history),
             label: 'History',
             tooltip: 'History',
           ),

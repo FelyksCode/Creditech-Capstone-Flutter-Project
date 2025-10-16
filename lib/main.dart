@@ -34,8 +34,32 @@ void main() async {
   );
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
+
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize dependencies after the widget tree is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeDependencies();
+    });
+  }
+
+  void _initializeDependencies() {
+    final firestoreService = Provider.of<FirestoreService>(context, listen: false);
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    final authController = Provider.of<AuthController>(context, listen: false);
+
+    // Set up dependencies
+    profileProvider.setFirestoreService(firestoreService);
+    authController.setProfileProvider(profileProvider);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +71,7 @@ class MainApp extends StatelessWidget {
         useMaterial3: true,
       ),
 
-      initialRoute: NavigationRoute.login.path,
+      initialRoute: NavigationRoute.mainRoute.path,
       routes: {
         NavigationRoute.login.path: (_) => const LoginLandingPage(),
         NavigationRoute.mainRoute.path: (_) => const AuthWrapper(),
