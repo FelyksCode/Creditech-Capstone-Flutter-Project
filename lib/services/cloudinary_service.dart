@@ -14,13 +14,11 @@ class CloudinaryService {
   static Future<String?> uploadImage(File imageFile, {String? userId}) async {
     try {
       if (!await imageFile.exists()) {
-        print('File does not exist: ${imageFile.path}');
         return null;
       }
 
       final fileSize = await imageFile.length();
       if (fileSize > 10 * 1024 * 1024) {
-        print('File too large: ${fileSize} bytes');
         return null;
       }
 
@@ -58,24 +56,18 @@ class CloudinaryService {
         'transformation': transformation,
       });
 
-      print('String to sign: ${_buildStringToSign(signatureParams)}');
-      print('Generated signature: $signature');
 
       final response = await request.send();
       final responseBody = await response.stream.bytesToString();
 
-      print('Cloudinary response status: ${response.statusCode}');
-      print('Cloudinary response body: $responseBody');
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(responseBody);
         return jsonResponse['secure_url'] as String?;
       } else {
-        print('Cloudinary upload failed.');
         return null;
       }
     } catch (e) {
-      print('Error uploading to Cloudinary: $e');
       return null;
     }
   }
@@ -126,7 +118,6 @@ class CloudinaryService {
       }
       return false;
     } catch (e) {
-      print('Error deleting from Cloudinary: $e');
       return false;
     }
   }

@@ -82,7 +82,6 @@ class NotificationProvider extends ChangeNotifier {
       // Manage background notifications
       await _manageBackgroundNotifications(newValue);
 
-      print('Notification setting updated: $newValue');
     } catch (e) {
       // Revert local state on error
       _isNotificationEnabled = !_isNotificationEnabled;
@@ -120,11 +119,10 @@ class NotificationProvider extends ChangeNotifier {
       // Manage background notifications
       await _manageBackgroundNotifications(enabled);
 
-      print('Notification setting set to: $enabled');
     } catch (e) {
       // Revert local state on error
       _isNotificationEnabled = !enabled;
-      _setError('Failed to save notification settings: $e');
+      _setError('Failed to save notification settings');
       notifyListeners();
     } finally {
       _setLoading(false);
@@ -147,14 +145,13 @@ class NotificationProvider extends ChangeNotifier {
       if (enabled) {
         // Schedule periodic notifications
         await LocalNotificationService.schedulePeriodicNotifications();
-        print('Background notifications enabled');
       } else {
         // Cancel all notifications
         await LocalNotificationService.cancelAllNotifications();
-        print('Background notifications disabled');
       }
     } catch (e) {
-      print('Error managing background notifications: $e');
+      // Surface error to UI and log for debugging
+      _setError('Error managing background notifications: $e');
     }
   }
 
@@ -165,7 +162,7 @@ class NotificationProvider extends ChangeNotifier {
       try {
         await _databaseService.deleteUserSettings(user.uid);
       } catch (e) {
-        print('Error clearing user settings: $e');
+        _setError('Error clearing user settings');
       }
     }
     
@@ -213,7 +210,7 @@ class NotificationProvider extends ChangeNotifier {
       final pending = await LocalNotificationService.getPendingNotifications();
       return pending.length;
     } catch (e) {
-      print('Error getting pending notifications: $e');
+      _setError('Error getting pending notifications');
       return 0;
     }
   }
@@ -223,7 +220,7 @@ class NotificationProvider extends ChangeNotifier {
     try {
       return await _databaseService.getAllSettings();
     } catch (e) {
-      print('Error getting all settings: $e');
+      _setError('Error getting all settings');
       return [];
     }
   }

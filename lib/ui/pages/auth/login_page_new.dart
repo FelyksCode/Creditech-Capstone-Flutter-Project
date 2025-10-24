@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:creditech_capstone_project/controller/auth_controller.dart';
+import 'package:creditech_capstone_project/controller/auth_form_provider.dart';
 import 'package:creditech_capstone_project/ui/pages/auth/register_page.dart';
 
 class LoginPageNew extends StatefulWidget {
@@ -14,7 +15,6 @@ class _LoginPageNewState extends State<LoginPageNew> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -35,12 +35,11 @@ class _LoginPageNewState extends State<LoginPageNew> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
-          child: Consumer<AuthController>(
-            builder: (context, authController, child) {
+          child: Consumer2<AuthController, AuthFormProvider>(
+            builder: (context, authController, authFormProvider, child) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header
                   const SizedBox(height: 20),
                   const Text(
                     'Welcome Back',
@@ -56,15 +55,12 @@ class _LoginPageNewState extends State<LoginPageNew> {
                     style: TextStyle(color: Colors.white70, fontSize: 16),
                   ),
                   const SizedBox(height: 40),
-
-                  // Login Form
                   Expanded(
                     child: SingleChildScrollView(
                       child: Form(
                         key: _formKey,
                         child: Column(
                           children: [
-                            // Email Field
                             _buildTextField(
                               controller: _emailController,
                               label: 'Email',
@@ -82,38 +78,32 @@ class _LoginPageNewState extends State<LoginPageNew> {
                               },
                             ),
                             const SizedBox(height: 16),
-
-                            // Password Field
-                            _buildTextField(
-                              controller: _passwordController,
-                              label: 'Password',
-                              obscureText: _obscurePassword,
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscurePassword
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                  color: Colors.white70,
+                            Consumer<AuthFormProvider>(
+                              builder: (context, authForm, _) => _buildTextField(
+                                controller: _passwordController,
+                                label: 'Password',
+                                obscureText: authForm.isPasswordHidden,
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    authForm.isPasswordHidden
+                                        ? Icons.visibility_outlined
+                                        : Icons.visibility_off_outlined,
+                                    color: Colors.white70,
+                                  ),
+                                  onPressed: authForm.togglePasswordVisibility,
                                 ),
-                                onPressed: () {
-                                  setState(() {
-                                    _obscurePassword = !_obscurePassword;
-                                  });
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Password is required';
+                                  }
+                                  if (value.length < 6) {
+                                    return 'Password must be at least 6 characters long';
+                                  }
+                                  return null;
                                 },
                               ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Password is required';
-                                }
-                                if (value.length < 6) {
-                                  return 'Password must be at least 6 characters long';
-                                }
-                                return null;
-                              },
                             ),
                             const SizedBox(height: 24),
-
-                            // Error Message
                             if (authController.errorMessage != null)
                               Container(
                                 width: double.infinity,
@@ -124,7 +114,6 @@ class _LoginPageNewState extends State<LoginPageNew> {
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
                                     color: Colors.red.withOpacity(0.4),
-                                    width: 1,
                                   ),
                                 ),
                                 child: Row(
@@ -149,8 +138,6 @@ class _LoginPageNewState extends State<LoginPageNew> {
                                 ),
                               ),
                             const SizedBox(height: 8),
-
-                            // Sign In Button
                             SizedBox(
                               width: double.infinity,
                               height: 50,
@@ -184,8 +171,6 @@ class _LoginPageNewState extends State<LoginPageNew> {
                               ),
                             ),
                             const SizedBox(height: 16),
-
-                            // Divider
                             Row(
                               children: [
                                 Expanded(
@@ -208,8 +193,6 @@ class _LoginPageNewState extends State<LoginPageNew> {
                               ],
                             ),
                             const SizedBox(height: 16),
-
-                            // Google Sign In Button
                             SizedBox(
                               width: double.infinity,
                               height: 50,
@@ -230,7 +213,7 @@ class _LoginPageNewState extends State<LoginPageNew> {
                                   'assets/images/google_icon.png',
                                   height: 24,
                                   width: 24,
-                                  errorBuilder: (context, error, stackTrace) =>
+                                  errorBuilder: (context, error, _) =>
                                       const Icon(Icons.g_mobiledata, size: 24),
                                 ),
                                 label: const Text(
@@ -243,8 +226,6 @@ class _LoginPageNewState extends State<LoginPageNew> {
                               ),
                             ),
                             const SizedBox(height: 24),
-
-                            // Forgot Password
                             TextButton(
                               onPressed: _showForgotPasswordDialog,
                               child: const Text(
@@ -260,8 +241,6 @@ class _LoginPageNewState extends State<LoginPageNew> {
                       ),
                     ),
                   ),
-
-                  // Sign Up Link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

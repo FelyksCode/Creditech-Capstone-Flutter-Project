@@ -32,7 +32,7 @@ class AuthController extends ChangeNotifier {
         try {
           await _profileProvider!.refreshUserData();
         } catch (e) {
-          print('Error refreshing user data: $e');
+          _setError('Unable to refresh profile. Please check your internet connection and try again.');
         }
       }
       

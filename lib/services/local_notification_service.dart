@@ -125,27 +125,41 @@ class LocalNotificationService {
   static Future<void> schedulePeriodicNotifications() async {
     if (!_isInitialized) await initialize();
     
-    // Cancel existing notifications first
     await cancelAllNotifications();
     
-    // Schedule notifications every 4 hours starting from 2 hours from now
+    // Schedule notifications at specific times: 10 AM, 1 PM, 6 PM
     final now = DateTime.now();
-    final scheduleTime = now.add(const Duration(hours: 2));
+    final notificationTimes = [10, 13, 18]; // 10 AM, 1 PM (13:00), 6 PM (18:00)
     
-    for (int i = 0; i < 6; i++) { // Schedule for 24 hours (6 notifications, every 4 hours)
-      final notificationTime = scheduleTime.add(Duration(hours: i * 4));
+    int notificationId = 1000;
+    
+    // Schedule for the next 7 days
+    for (int day = 0; day < 7; day++) {
+      final targetDate = now.add(Duration(days: day));
       
-      if (notificationTime.isAfter(now)) {
-        await _scheduleNotification(
-          id: 1000 + i,
-          title: 'Creditech',
-          body: _getRandomMessage(),
-          scheduledTime: notificationTime,
+      for (int hour in notificationTimes) {
+        final notificationTime = DateTime(
+          targetDate.year,
+          targetDate.month,
+          targetDate.day,
+          hour,
+          0, // minutes
+          0, // seconds
         );
+        
+        // Only schedule if the time is in the future
+        if (notificationTime.isAfter(now)) {
+          await _scheduleNotification(
+            id: notificationId++,
+            title: 'Creditech',
+            body: _getRandomMessage(),
+            scheduledTime: notificationTime,
+          );
+        }
       }
     }
     
-    print('Scheduled ${6} periodic notifications');
+    print('Scheduled notifications for 10 AM, 1 PM, and 6 PM for the next 7 days');
   }
 
   // Schedule a single notification
@@ -202,7 +216,6 @@ class LocalNotificationService {
   // Cancel all notifications
   static Future<void> cancelAllNotifications() async {
     await _notificationsPlugin.cancelAll();
-    print('All notifications cancelled');
   }
 
   // Cancel specific notification

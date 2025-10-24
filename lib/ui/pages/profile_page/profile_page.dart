@@ -54,17 +54,14 @@ class ProfilePage extends StatelessWidget {
 
   void _handleUpdateProfilePhoto(BuildContext context) async {
     try {
-      print('Starting photo update process...');
       
       // Show image picker bottom sheet
       final imageFile = await ImagePickerService.showImageSourceBottomSheet(context);
       
-      print('Image file selected: ${imageFile?.path}');
       
       if (imageFile != null && context.mounted) {
         // Verify file exists before proceeding
         if (!await imageFile.exists()) {
-          print('Selected file does not exist!');
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Selected file is not available. Please try again.'),
@@ -74,19 +71,16 @@ class ProfilePage extends StatelessWidget {
           return;
         }
         
-        print('File exists, proceeding with upload...');
         
         // Show loading dialog
         LoadingDialog.show(context, message: 'Uploading photo...');
         
         // Get current user ID
         final userId = FirebaseAuth.instance.currentUser?.uid;
-        print('User ID: $userId');
         
         // Upload to Cloudinary
         final photoURL = await CloudinaryService.uploadImage(imageFile, userId: userId);
         
-        print('Upload result: $photoURL');
         
         if (context.mounted) {
           LoadingDialog.hide(context);
@@ -96,7 +90,6 @@ class ProfilePage extends StatelessWidget {
             final profileProvider = context.read<ProfileProvider>();
             await profileProvider.updatePhotoURL(photoURL);
             
-            print('Profile updated successfully');
             
             // Show success message
             ScaffoldMessenger.of(context).showSnackBar(
@@ -106,7 +99,6 @@ class ProfilePage extends StatelessWidget {
               ),
             );
           } else {
-            print('Upload failed - no URL returned');
             // Show error message
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -117,10 +109,8 @@ class ProfilePage extends StatelessWidget {
           }
         }
       } else {
-        print('No image file selected or context not mounted');
       }
     } catch (e) {
-      print('Error in photo update process: $e');
       if (context.mounted) {
         LoadingDialog.hide(context);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -281,28 +271,28 @@ class ProfilePage extends StatelessWidget {
                         const SizedBox(height: 14),
             
             
-                        _TileGroup(
-                          children: [
-                            _TileRow(icon: Icons.lock_outline, title: 'Security'),
-                            _DividerRow(),
-                            _TileRow(
-                              icon: Icons.support_agent_outlined,
-                              title: 'Help & Support',
-                            ),
-                            _DividerRow(),
-                            _TileRow(
-                              icon: Icons.mail_outline,
-                              title: 'Contact us',
-                            ),
-                            _DividerRow(),
-                            _TileRow(
-                              icon: Icons.privacy_tip_outlined,
-                              title: 'Privacy policy',
-                            ),
-                          ],
-                        ),
+                        // _TileGroup(
+                        //   children: [
+                        //     _TileRow(icon: Icons.lock_outline, title: 'Security'),
+                        //     _DividerRow(),
+                        //     _TileRow(
+                        //       icon: Icons.support_agent_outlined,
+                        //       title: 'Help & Support',
+                        //     ),
+                        //     _DividerRow(),
+                        //     _TileRow(
+                        //       icon: Icons.mail_outline,
+                        //       title: 'Contact us',
+                        //     ),
+                        //     _DividerRow(),
+                        //     _TileRow(
+                        //       icon: Icons.privacy_tip_outlined,
+                        //       title: 'Privacy policy',
+                        //     ),
+                        //   ],
+                        // ),
             
-                        const SizedBox(height: 14),
+                        // const SizedBox(height: 14),
             
                         // Test Notification Section
                         // _TileGroup(

@@ -5,9 +5,24 @@ import 'package:provider/provider.dart';
 import 'glassy_card.dart';
 import 'package:creditech_capstone_project/ui/widgets/dust_background.dart';
 import 'package:creditech_capstone_project/controller/profile_provider.dart';
+import 'package:creditech_capstone_project/controller/chart_provider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    // Refresh the chart data when the page loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ChartProvider>(context, listen: false).refreshData();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,19 +38,22 @@ class HomePage extends StatelessWidget {
                 opacity: 0.06,
               ),
             ),
-        
+
             SafeArea(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 22,
+                  vertical: 18,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _header(),
                     const SizedBox(height: 28),
-        
+
                     const GlassyCard(),
                     const SizedBox(height: 42),
-        
+
                     const Text(
                       'This Month',
                       style: TextStyle(
@@ -45,8 +63,40 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 18),
-        
-                    const _Chart(fraudRatio: 0.5, totalText: '—'),
+
+                    Consumer<ChartProvider>(
+                      builder: (context, chartProvider, _) {
+                        if (chartProvider.isLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white70,
+                              ),
+                            ),
+                          );
+                        }
+                        if (chartProvider.thisMonthPredictions == null) {
+                          return const Center(
+                            child: Text(
+                              'Error loading statistics',
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                          );
+                        }
+                        if (chartProvider.thisMonthPredictions!.isEmpty) {
+                          return const Center(
+                            child: Text(
+                              'No transactions this month',
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                          );
+                        }
+                        return _Chart(
+                          fraudRatio: chartProvider.fraudRatio,
+                          totalText: chartProvider.totalCount.toString(),
+                        );
+                      },
+                    ),
                     const SizedBox(height: 10),
                   ],
                 ),
@@ -70,8 +120,8 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(height: 2),
             Text(
-              profileProvider.nickName.isNotEmpty 
-                  ? profileProvider.nickName 
+              profileProvider.nickName.isNotEmpty
+                  ? profileProvider.nickName
                   : profileProvider.fullName,
               style: const TextStyle(
                 color: Colors.white,
@@ -87,17 +137,16 @@ class HomePage extends StatelessWidget {
 }
 
 class _Chart extends StatelessWidget {
-  const _Chart({
-    required this.fraudRatio,
-    this.totalText = '—',
-    this.fraudColor = const Color(0xFFE74C3C),
-    this.safeColor = const Color(0xFF4169E1),
-  });
+  const _Chart({required this.fraudRatio, required this.totalText});
 
   final double fraudRatio;
   final String totalText;
-  final Color fraudColor;
-  final Color safeColor;
+  static const Color fraudColor = Color(0xFFE74C3C);
+  static const Color safeColor = Color(0xFF4169E1);
+
+  int get totalCount => int.parse(totalText);
+  int get fraudCount => (totalCount * fraudRatio).round();
+  int get safeCount => totalCount - fraudCount;
 
   @override
   Widget build(BuildContext context) {
@@ -139,26 +188,64 @@ class _Chart extends StatelessWidget {
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  totalText,
-                  style: const TextStyle(
-                    fontSize: 38,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 6),
                 Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    _LegendDot(color: Color(0xFFE74C3C)),
-                    SizedBox(width: 6),
-                    Text('Fraud', style: TextStyle(color: Colors.white70)),
-                    SizedBox(width: 16),
-                    _LegendDot(color: Color(0xFF4169E1)),
-                    SizedBox(width: 6),
-                    Text('Safe', style: TextStyle(color: Colors.white70)),
+                  children: [
+                    Column(
+                      children: [
+                        Text(
+                          '$safeCount',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w800,
+                            color: safeColor,
+                          ),
+                        ),
+                        const Text(
+                          'Safe',
+                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                        ),
+                      ],
+                    ),
+
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 12),
+                      width: 1,
+                      height: 30,
+                      color: Colors.white24,
+                    ),
+                    Column(
+                      children: [
+                        Text(
+                          '$fraudCount',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w800,
+                            color: fraudColor,
+                          ),
+                        ),
+                        const Text(
+                          'Fraud',
+                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                        ),
+                      ],
+                    ),
                   ],
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white10,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    'Total: $totalText',
+                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
                 ),
               ],
             ),
@@ -176,20 +263,6 @@ class _Chart extends StatelessWidget {
     return CustomPaint(
       size: const Size(240, 240),
       painter: _ArcPainter(color: color, start: start, sweep: sweep),
-    );
-  }
-}
-
-class _LegendDot extends StatelessWidget {
-  const _LegendDot({required this.color});
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 10,
-      height: 10,
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
     );
   }
 }

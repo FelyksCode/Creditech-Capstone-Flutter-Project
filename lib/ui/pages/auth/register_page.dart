@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:creditech_capstone_project/controller/auth_controller.dart';
+import 'package:creditech_capstone_project/controller/auth_form_provider.dart';
 import 'package:creditech_capstone_project/ui/pages/auth/login_page_new.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -15,8 +16,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
+  // Password visibility managed by AuthFormProvider
 
   @override
   void dispose() {
@@ -38,8 +38,8 @@ class _RegisterPageState extends State<RegisterPage> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
-          child: Consumer<AuthController>(
-            builder: (context, authController, child) {
+          child: Consumer2<AuthController, AuthFormProvider>(
+            builder: (context, authController, authFormProvider, child) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -89,19 +89,15 @@ class _RegisterPageState extends State<RegisterPage> {
                             _buildTextField(
                               controller: _passwordController,
                               label: 'Password',
-                              obscureText: _obscurePassword,
+                              obscureText: authFormProvider.isPasswordHidden,
                               suffixIcon: IconButton(
                                 icon: Icon(
-                                  _obscurePassword
+                                  authFormProvider.isPasswordHidden
                                       ? Icons.visibility
                                       : Icons.visibility_off,
                                   color: Colors.white70,
                                 ),
-                                onPressed: () {
-                                  setState(() {
-                                    _obscurePassword = !_obscurePassword;
-                                  });
-                                },
+                                onPressed: authFormProvider.togglePasswordVisibility,
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -119,20 +115,15 @@ class _RegisterPageState extends State<RegisterPage> {
                             _buildTextField(
                               controller: _confirmPasswordController,
                               label: 'Confirm Password',
-                              obscureText: _obscureConfirmPassword,
+                              obscureText: authFormProvider.isConfirmPasswordHidden,
                               suffixIcon: IconButton(
                                 icon: Icon(
-                                  _obscureConfirmPassword
+                                  authFormProvider.isConfirmPasswordHidden
                                       ? Icons.visibility
                                       : Icons.visibility_off,
                                   color: Colors.white70,
                                 ),
-                                onPressed: () {
-                                  setState(() {
-                                    _obscureConfirmPassword =
-                                        !_obscureConfirmPassword;
-                                  });
-                                },
+                                onPressed: authFormProvider.toggleConfirmPasswordVisibility,
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {

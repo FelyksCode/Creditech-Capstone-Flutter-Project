@@ -1,24 +1,16 @@
 import 'package:flutter/material.dart';
 
-enum UploadStatus { uploading, completed, failed }
-
-class UploadItemData {
-  final String fileName;
-  final String sizeText;
-  final UploadStatus status;
-  final double progress;
-
-  const UploadItemData({
-    required this.fileName,
-    required this.sizeText,
-    required this.status,
-    required this.progress,
-  });
-}
+import '../../../models/upload_models.dart';
 
 class UploadFileItem extends StatelessWidget {
-  const UploadFileItem({super.key, required this.data});
+  const UploadFileItem({
+    super.key,
+    required this.data,
+    required this.onClose,
+  });
+
   final UploadItemData data;
+  final VoidCallback onClose;
 
   @override
   Widget build(BuildContext context) {
@@ -110,10 +102,23 @@ class UploadFileItem extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                if (isUploading)
-                  _IconTap(icon: Icons.close_rounded)
-                else if (isCompleted)
-                  _IconTap(icon: Icons.delete_outline),
+                if (isUploading || isCompleted)
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _IconTap(
+                        icon: isUploading ? Icons.close_rounded : Icons.delete_outline,
+                        onTap: onClose,
+                      ),
+                      if (isCompleted) const Text(
+                        'Remove',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
 
@@ -166,7 +171,7 @@ class _FileBadge extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: const Text(
-                'PDF',
+                'CSV',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 9,
@@ -183,13 +188,18 @@ class _FileBadge extends StatelessWidget {
 }
 
 class _IconTap extends StatelessWidget {
-  const _IconTap({required this.icon});
+  const _IconTap({
+    required this.icon,
+    required this.onTap,
+  });
+
   final IconData icon;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Padding(
         padding: const EdgeInsets.only(top: 2.0, left: 4, right: 4),

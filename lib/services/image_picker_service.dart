@@ -75,7 +75,6 @@ class ImagePickerService {
       // Request camera permission
       final cameraStatus = await Permission.camera.request();
       if (!cameraStatus.isGranted) {
-        print('Camera permission denied');
         return null;
       }
 
@@ -88,21 +87,16 @@ class ImagePickerService {
       
       if (image != null) {
         final file = File(image.path);
-        print('Camera image selected: ${image.path}');
         
         // Validate file exists
         if (await file.exists()) {
-          print('File exists and is ready for upload');
           return file;
         } else {
-          print('File does not exist at path: ${image.path}');
           return null;
         }
       }
-      print('No image selected from camera');
       return null;
     } catch (e) {
-      print('Error picking image from camera: $e');
       return null;
     }
   }
@@ -110,15 +104,12 @@ class ImagePickerService {
   /// Pick image from gallery
   static Future<File?> _pickImageFromGallery() async {
     try {
-      // Request permissions - try photos first (Android 13+), then storage (older versions)
       PermissionStatus photoStatus = await Permission.photos.request();
       
       if (!photoStatus.isGranted) {
-        // Try storage permission as fallback
         PermissionStatus storageStatus = await Permission.storage.request();
         if (!storageStatus.isGranted) {
-          // If both fail, try anyway as some devices may not need explicit permission
-          print('Permissions not granted, attempting gallery access anyway');
+          print('Permissions not granted');
         }
       }
 
@@ -131,22 +122,17 @@ class ImagePickerService {
       
       if (image != null) {
         final file = File(image.path);
-        print('Gallery image selected: ${image.path}');
         
         // Validate file exists
         if (await file.exists()) {
           final fileSize = await file.length();
-          print('File exists and is ready for upload (${fileSize} bytes)');
           return file;
         } else {
-          print('File does not exist at path: ${image.path}');
           return null;
         }
       }
-      print('No image selected from gallery');
       return null;
     } catch (e) {
-      print('Error picking image from gallery: $e');
       return null;
     }
   }
@@ -163,7 +149,6 @@ class ImagePickerService {
       final storageStatus = await Permission.storage.isGranted;
       return photoStatus || storageStatus;
     } catch (e) {
-      print('Error checking storage permissions: $e');
       return false;
     }
   }

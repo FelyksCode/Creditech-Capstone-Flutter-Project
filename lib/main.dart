@@ -7,9 +7,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:creditech_capstone_project/controller/index_nav_provider.dart';
 import 'package:creditech_capstone_project/controller/auth_controller.dart';
+import 'package:creditech_capstone_project/controller/auth_initialization_provider.dart';
 import 'package:creditech_capstone_project/controller/profile_provider.dart';
 import 'package:creditech_capstone_project/controller/notification_provider.dart';
-import 'package:creditech_capstone_project/services/local_notification_service.dart';
+import 'package:creditech_capstone_project/controller/upload_provider.dart';
+import 'package:creditech_capstone_project/controller/chart_provider.dart';
+import 'package:creditech_capstone_project/controller/auth_form_provider.dart';
+import 'package:creditech_capstone_project/controller/history_provider.dart';
 import 'package:creditech_capstone_project/ui/pages/auth/login_page.dart';
 import 'package:creditech_capstone_project/ui/widgets/auth_wrapper.dart';
 import 'package:creditech_capstone_project/static/navigation_route.dart';
@@ -20,9 +24,6 @@ void main() async {
   await dotenv.load(fileName: ".env");
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  
-  // Initialize local notifications
-  await LocalNotificationService.initialize();
   runApp(
     MultiProvider(
       providers: [
@@ -33,7 +34,12 @@ void main() async {
         ChangeNotifierProvider(create: (_) => IndexNavProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => AuthController()),
+        ChangeNotifierProvider(create: (_) => AuthInitializationProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider(create: (_) => UploadProvider()),
+        ChangeNotifierProvider(create: (_) => ChartProvider()),
+        ChangeNotifierProvider(create: (_) => AuthFormProvider()),
+        ChangeNotifierProvider(create: (_) => HistoryProvider()),
       ],
       child: const MainApp(),
     ),
