@@ -257,15 +257,15 @@ class ProfilePage extends StatelessWidget {
                               },
                             ),
                             _DividerRow(),
-                            _NotificationTileRow(
-                              icon: Icons.notifications_none_rounded,
-                              title: 'Notifications',
-                              value: notificationProvider.isNotificationEnabled,
-                              onChanged: (value) {
-                                notificationProvider.setNotificationEnabled(value);
-                              },
-                              isLoading: notificationProvider.isLoading,
-                            ),
+                            // _NotificationTileRow(
+                            //   icon: Icons.notifications_none_rounded,
+                            //   title: 'Notifications',
+                            //   value: notificationProvider.isNotificationEnabled,
+                            //   onChanged: (value) {
+                            //     notificationProvider.setNotificationEnabled(value);
+                            //   },
+                            //   isLoading: notificationProvider.isLoading,
+                            // ),
                             
                           ],
                         ),
