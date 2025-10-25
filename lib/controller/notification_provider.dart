@@ -16,14 +16,22 @@ class NotificationProvider extends ChangeNotifier {
   String? get error => _error;
 
   NotificationProvider() {
-    _initializeNotificationState();
-    _initializeNotificationService();
+    _initializeNotificationService().then((_) {
+      _initializeNotificationState();
+    });
   }
 
   // Initialize notification service
   Future<void> _initializeNotificationService() async {
-    await LocalNotificationService.initialize();
-    await LocalNotificationService.requestPermissions();
+    try {
+      await LocalNotificationService.initialize();
+      final hasPermission = await LocalNotificationService.requestPermissions();
+      if (!hasPermission) {
+        _setError('Notification permissions not granted');
+      }
+    } catch (e) {
+      _setError('Failed to initialize notification service: $e');
+    }
   }
 
   // Initialize notification state from database
@@ -197,31 +205,5 @@ class NotificationProvider extends ChangeNotifier {
     _error = null;
   }
 
-  // Show test notification
-  Future<void> showTestNotification() async {
-    if (_isNotificationEnabled) {
-      await LocalNotificationService.showTestNotification();
-    }
-  }
 
-  // Get pending notifications count (for debugging)
-  Future<int> getPendingNotificationsCount() async {
-    try {
-      final pending = await LocalNotificationService.getPendingNotifications();
-      return pending.length;
-    } catch (e) {
-      _setError('Error getting pending notifications');
-      return 0;
-    }
-  }
-
-  // For debugging - get all settings
-  Future<List<Map<String, dynamic>>> getAllSettings() async {
-    try {
-      return await _databaseService.getAllSettings();
-    } catch (e) {
-      _setError('Error getting all settings');
-      return [];
-    }
-  }
 }

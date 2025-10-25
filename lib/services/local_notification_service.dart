@@ -28,43 +28,109 @@ class LocalNotificationService {
   static Future<void> initialize() async {
     if (_isInitialized) return;
 
-    // Initialize timezone
-    tz.initializeTimeZones();
-    
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    try {
+      // Initialize timezone with device timezone
+      tz.initializeTimeZones();
+      
+      // Set local timezone - try common timezones or fallback to UTC
+      String timezoneName;
+      try {
+        // Try to detect timezone based on system time offset
+        final now = DateTime.now();
+        final utcOffset = now.timeZoneOffset.inHours;
+        
+        // Map common UTC offsets to timezone names
+        switch (utcOffset) {
+          case -8: timezoneName = 'America/Los_Angeles'; break;
+          case -5: timezoneName = 'America/New_York'; break;
+          case 0: timezoneName = 'UTC'; break;
+          case 1: timezoneName = 'Europe/London'; break;
+          case 7: timezoneName = 'Asia/Jakarta'; break; // WIB
+          case 8: timezoneName = 'Asia/Singapore'; break;
+          case 9: timezoneName = 'Asia/Tokyo'; break;
+          default: timezoneName = 'UTC';
+        }
+      } catch (e) {
+        timezoneName = 'UTC';
+      }
+      
+      try {
+        tz.setLocalLocation(tz.getLocation(timezoneName));
+      } catch (e) {
+        tz.setLocalLocation(tz.UTC);
+      }
+      
+      const AndroidInitializationSettings initializationSettingsAndroid =
+          AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const DarwinInitializationSettings initializationSettingsIOS =
-        DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+      const DarwinInitializationSettings initializationSettingsIOS =
+          DarwinInitializationSettings(
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
+      );
 
-    const InitializationSettings initializationSettings =
-        InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
+      const InitializationSettings initializationSettings =
+          InitializationSettings(
+        android: initializationSettingsAndroid,
+        iOS: initializationSettingsIOS,
+      );
 
-    await _notificationsPlugin.initialize(
-      initializationSettings,
-      onDidReceiveNotificationResponse: _onNotificationTap,
-    );
+      await _notificationsPlugin.initialize(
+        initializationSettings,
+        onDidReceiveNotificationResponse: _onNotificationTap,
+      );
 
-    _isInitialized = true;
+      // Create notification channel for Android
+      if (Platform.isAndroid) {
+        await _createNotificationChannel();
+      }
+
+      _isInitialized = true;
+    } catch (e) {
+      // Don't set _isInitialized to true if initialization fails
+    }
   }
 
   // Handle notification tap
   static void _onNotificationTap(NotificationResponse notificationResponse) {
-    print('Notification tapped: ${notificationResponse.payload}');
+    // Handle notification tap - can add navigation logic here if needed
+  }
+
+  // Create notification channel for Android
+  static Future<void> _createNotificationChannel() async {
+    final AndroidFlutterLocalNotificationsPlugin? androidPlugin =
+        _notificationsPlugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+
+    if (androidPlugin != null) {
+      const AndroidNotificationChannel channel = AndroidNotificationChannel(
+        'creditech_insights',
+        'Financial Insights',
+        description: 'Notifications for financial insights and tips',
+        importance: Importance.defaultImportance,
+        playSound: true,
+        enableVibration: true,
+      );
+
+      await androidPlugin.createNotificationChannel(channel);
+    }
   }
 
   // Request notification permissions
   static Future<bool> requestPermissions() async {
     if (Platform.isAndroid) {
-      final status = await Permission.notification.request();
-      return status == PermissionStatus.granted;
+      // Request basic notification permission
+      final notificationStatus = await Permission.notification.request();
+      bool hasNotificationPermission = notificationStatus == PermissionStatus.granted;
+      
+      // For Android 12+ (API 31+), also request exact alarm permission
+      try {
+        await Permission.scheduleExactAlarm.request();
+      } catch (e) {
+        // Exact alarm permission may not be needed on older Android versions
+      }
+      return hasNotificationPermission;
     } else if (Platform.isIOS) {
       final result = await _notificationsPlugin
           .resolvePlatformSpecificImplementation<
@@ -123,43 +189,54 @@ class LocalNotificationService {
 
   // Schedule periodic notifications
   static Future<void> schedulePeriodicNotifications() async {
-    if (!_isInitialized) await initialize();
-    
-    await cancelAllNotifications();
-    
-    // Schedule notifications at specific times: 10 AM, 1 PM, 6 PM
-    final now = DateTime.now();
-    final notificationTimes = [10, 13, 18]; // 10 AM, 1 PM (13:00), 6 PM (18:00)
-    
-    int notificationId = 1000;
-    
-    // Schedule for the next 7 days
-    for (int day = 0; day < 7; day++) {
-      final targetDate = now.add(Duration(days: day));
-      
-      for (int hour in notificationTimes) {
-        final notificationTime = DateTime(
-          targetDate.year,
-          targetDate.month,
-          targetDate.day,
-          hour,
-          0, // minutes
-          0, // seconds
-        );
-        
-        // Only schedule if the time is in the future
-        if (notificationTime.isAfter(now)) {
-          await _scheduleNotification(
-            id: notificationId++,
-            title: 'Creditech',
-            body: _getRandomMessage(),
-            scheduledTime: notificationTime,
-          );
-        }
+    if (!_isInitialized) {
+      await initialize();
+      if (!_isInitialized) {
+        return;
       }
     }
     
-    print('Scheduled notifications for 10 AM, 1 PM, and 6 PM for the next 7 days');
+    try {
+      await cancelAllNotifications();
+      
+      // Schedule notifications at specific times: 10 AM, 1 PM, 6 PM
+      final now = DateTime.now();
+      final notificationTimes = [10, 13, 18]; // 10 AM, 1 PM (13:00), 6 PM (18:00)
+      
+      int notificationId = 1000;
+      
+      // Schedule for the next 7 days
+      for (int day = 0; day < 7; day++) {
+        final targetDate = now.add(Duration(days: day));
+        
+        for (int hour in notificationTimes) {
+          final notificationTime = DateTime(
+            targetDate.year,
+            targetDate.month,
+            targetDate.day,
+            hour,
+            0, // minutes
+            0, // seconds
+          );
+          
+          // Only schedule if the time is in the future (with 1 minute buffer)
+          if (notificationTime.isAfter(now.add(const Duration(minutes: 1)))) {
+            try {
+              await _scheduleNotification(
+                id: notificationId++,
+                title: 'Creditech',
+                body: _getRandomMessage(),
+                scheduledTime: notificationTime,
+              );
+            } catch (e) {
+              // Failed to schedule this specific notification, continue with others
+            }
+          }
+        }
+      }
+    } catch (e) {
+      // Error scheduling periodic notifications
+    }
   }
 
   // Schedule a single notification
@@ -170,41 +247,60 @@ class LocalNotificationService {
     required DateTime scheduledTime,
     String? payload,
   }) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'creditech_insights',
-      'Financial Insights',
-      channelDescription: 'Notifications for financial insights and tips',
-      importance: Importance.defaultImportance,
-      priority: Priority.defaultPriority,
-      icon: '@mipmap/ic_launcher',
-      color: Color(0xFF4169E1),
-      enableVibration: true,
-    );
+    try {
+      const AndroidNotificationDetails androidPlatformChannelSpecifics =
+          AndroidNotificationDetails(
+        'creditech_insights',
+        'Financial Insights',
+        channelDescription: 'Notifications for financial insights and tips',
+        importance: Importance.defaultImportance,
+        priority: Priority.defaultPriority,
+        icon: '@mipmap/ic_launcher',
+        color: Color(0xFF4169E1),
+        enableVibration: true,
+        enableLights: true,
+        playSound: true,
+        // Additional Android settings for reliability
+        ongoing: false,
+        autoCancel: true,
+      );
 
-    const DarwinNotificationDetails iOSPlatformChannelSpecifics =
-        DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
+      const DarwinNotificationDetails iOSPlatformChannelSpecifics =
+          DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      );
 
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-      iOS: iOSPlatformChannelSpecifics,
-    );
+      const NotificationDetails platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics,
+      );
 
-    await _notificationsPlugin.zonedSchedule(
-      id,
-      title,
-      body,
-      tz.TZDateTime.from(scheduledTime, tz.local),
-      platformChannelSpecifics,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      payload: payload,
-    );
+      // Convert to timezone-aware DateTime
+      final tzScheduledTime = tz.TZDateTime.from(scheduledTime, tz.local);
+      
+      // Verify the scheduled time is in the future
+      final now = tz.TZDateTime.now(tz.local);
+      if (!tzScheduledTime.isAfter(now)) {
+        return;
+      }
+
+      await _notificationsPlugin.zonedSchedule(
+        id,
+        title,
+        body,
+        tzScheduledTime,
+        platformChannelSpecifics,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        payload: payload,
+        matchDateTimeComponents: null, // Don't repeat, schedule once
+      );
+    } catch (e) {
+      rethrow;
+    }
   }
 
   // Get random message
@@ -228,13 +324,5 @@ class LocalNotificationService {
     return await _notificationsPlugin.pendingNotificationRequests();
   }
 
-  // Show test notification
-  static Future<void> showTestNotification() async {
-    await showNotification(
-      id: 999,
-      title: 'Creditech',
-      body: _getRandomMessage(),
-      payload: 'test_notification',
-    );
-  }
+
 }

@@ -52,6 +52,8 @@ class ProfilePage extends StatelessWidget {
     }
   }
 
+
+
   void _handleUpdateProfilePhoto(BuildContext context) async {
     try {
       
@@ -292,39 +294,7 @@ class ProfilePage extends StatelessWidget {
                         //   ],
                         // ),
             
-                        // const SizedBox(height: 14),
-            
-                        // Test Notification Section
-                        // _TileGroup(
-                        //   children: [
-                        //     _TileRow(
-                        //       icon: notificationProvider.isNotificationEnabled 
-                        //           ? Icons.notifications_active 
-                        //           : Icons.notifications_off,
-                        //       title: 'Test Notification',
-                        //       trailingText: notificationProvider.isNotificationEnabled 
-                        //           ? 'TAP TO TEST' 
-                        //           : 'DISABLED',
-                        //       trailingTextColor: notificationProvider.isNotificationEnabled 
-                        //           ? const Color(0xFF4169E1) 
-                        //           : Colors.red,
-                        //       onTap: notificationProvider.isNotificationEnabled 
-                        //           ? () => notificationProvider.showTestNotification()
-                        //           : () {
-                        //               ScaffoldMessenger.of(context).showSnackBar(
-                        //                 const SnackBar(
-                        //                   content: Text('Please enable notifications first'),
-                        //                   backgroundColor: Colors.orange,
-                        //                 ),
-                        //               );
-                        //             },
-                        //     ),
-                        //   ],
-                        // ),
-            
-                        const SizedBox(height: 14),
-
-                        _TileGroup(
+                        const SizedBox(height: 14),                        _TileGroup(
                           children: [
                             _TileRow(
                               icon: Icons.logout,
@@ -376,14 +346,12 @@ class _TileRow extends StatelessWidget {
     required this.icon,
     required this.title,
     this.trailingText,
-    this.trailingTextColor,
     this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String? trailingText;
-  final Color? trailingTextColor;
   final VoidCallback? onTap;
 
   @override
@@ -410,8 +378,8 @@ class _TileRow extends StatelessWidget {
             if (trailingText != null)
               Text(
                 trailingText!,
-                style: TextStyle(
-                  color: trailingTextColor ?? Colors.white70,
+                style: const TextStyle(
+                  color: Colors.white70,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
