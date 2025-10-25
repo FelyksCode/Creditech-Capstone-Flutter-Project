@@ -52,47 +52,47 @@ class ProfilePage extends StatelessWidget {
     }
   }
 
-
-
   void _handleUpdateProfilePhoto(BuildContext context) async {
     try {
-      
       // Show image picker bottom sheet
-      final imageFile = await ImagePickerService.showImageSourceBottomSheet(context);
-      
-      
+      final imageFile = await ImagePickerService.showImageSourceBottomSheet(
+        context,
+      );
+
       if (imageFile != null && context.mounted) {
         // Verify file exists before proceeding
         if (!await imageFile.exists()) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Selected file is not available. Please try again.'),
+              content: Text(
+                'Selected file is not available. Please try again.',
+              ),
               backgroundColor: Colors.red,
             ),
           );
           return;
         }
-        
-        
+
         // Show loading dialog
         LoadingDialog.show(context, message: 'Uploading photo...');
-        
+
         // Get current user ID
         final userId = FirebaseAuth.instance.currentUser?.uid;
-        
+
         // Upload to Cloudinary
-        final photoURL = await CloudinaryService.uploadImage(imageFile, userId: userId);
-        
-        
+        final photoURL = await CloudinaryService.uploadImage(
+          imageFile,
+          userId: userId,
+        );
+
         if (context.mounted) {
           LoadingDialog.hide(context);
-          
+
           if (photoURL != null && photoURL.isNotEmpty) {
             // Update profile provider
             final profileProvider = context.read<ProfileProvider>();
             await profileProvider.updatePhotoURL(photoURL);
-            
-            
+
             // Show success message
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -110,8 +110,7 @@ class ProfilePage extends StatelessWidget {
             );
           }
         }
-      } else {
-      }
+      } else {}
     } catch (e) {
       if (context.mounted) {
         LoadingDialog.hide(context);
@@ -140,16 +139,15 @@ class ProfilePage extends StatelessWidget {
                     opacity: 0.06,
                   ),
                 ),
-            
+
                 SafeArea(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                       
                         const SizedBox(height: 16),
-            
+
                         Center(
                           child: Column(
                             children: [
@@ -166,11 +164,15 @@ class ProfilePage extends StatelessWidget {
                                         color: const Color(0xFF202020),
                                         image: profileProvider.photoURL != null
                                             ? DecorationImage(
-                                                image: NetworkImage(profileProvider.photoURL!),
+                                                image: NetworkImage(
+                                                  profileProvider.photoURL!,
+                                                ),
                                                 fit: BoxFit.cover,
                                               )
                                             : const DecorationImage(
-                                                image: AssetImage('assets/images/img.png'),
+                                                image: AssetImage(
+                                                  'assets/images/img.png',
+                                                ),
                                                 fit: BoxFit.cover,
                                               ),
                                       ),
@@ -186,7 +188,9 @@ class ProfilePage extends StatelessWidget {
                                           color: Colors.white,
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.black.withOpacity(0.35),
+                                              color: Colors.black.withOpacity(
+                                                0.35,
+                                              ),
                                               blurRadius: 8,
                                               offset: const Offset(0, 3),
                                             ),
@@ -224,7 +228,7 @@ class ProfilePage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 20),
-            
+
                         _TileGroup(
                           children: [
                             _TileRow(
@@ -256,23 +260,23 @@ class ProfilePage extends StatelessWidget {
                                 }
                               },
                             ),
-                            _DividerRow(),
-                            _NotificationTileRow(
-                              icon: Icons.notifications_none_rounded,
-                              title: 'Notifications',
-                              value: notificationProvider.isNotificationEnabled,
-                              onChanged: (value) {
-                                notificationProvider.setNotificationEnabled(value);
-                              },
-                              isLoading: notificationProvider.isLoading,
-                            ),
-                            
+                            // _DividerRow(),
+                            // _NotificationTileRow(
+                            //   icon: Icons.notifications_none_rounded,
+                            //   title: 'Notifications',
+                            //   value: notificationProvider.isNotificationEnabled,
+                            //   onChanged: (value) {
+                            //     notificationProvider.setNotificationEnabled(
+                            //       value,
+                            //     );
+                            //   },
+                            //   isLoading: notificationProvider.isLoading,
+                            // ),
                           ],
                         ),
-            
+
                         const SizedBox(height: 14),
-            
-            
+
                         // _TileGroup(
                         //   children: [
                         //     _TileRow(icon: Icons.lock_outline, title: 'Security'),
@@ -293,8 +297,8 @@ class ProfilePage extends StatelessWidget {
                         //     ),
                         //   ],
                         // ),
-            
-                        const SizedBox(height: 14),                        _TileGroup(
+                        const SizedBox(height: 14),
+                        _TileGroup(
                           children: [
                             _TileRow(
                               icon: Icons.logout,
@@ -431,7 +435,9 @@ class _NotificationTileRow extends StatelessWidget {
                   scale: 0.6,
                   child: const CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF4169E1)),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Color(0xFF4169E1),
+                    ),
                   ),
                 )
               : Transform.scale(
